@@ -18,7 +18,7 @@
   --coral:#A83820;  --coral-bg:#FAE9E5;  --coral-dk:#4A1B0C;
   --purple:#4A42B0; --purple-bg:#ECEAFE; --purple-dk:#221D5C;
 }
-html,body{background:var(--bg);font-family:'Noto Sans SC','PingFang SC',sans-serif;color:var(--text);line-height:1.6;}
+html,body{background:var(--bg);font-family:'Noto Sans SC','PingFang SC',sans-serif;color:var(--text);line-height:1.6;height:100vh;overflow:hidden;}
 
 /* ══ HEADER ══ */
 .hdr{
@@ -47,43 +47,30 @@ html,body{background:var(--bg);font-family:'Noto Sans SC','PingFang SC',sans-ser
 }
 .hdr-link:hover{background:var(--purple);color:#fff;}
 
-/* ══ SIDE NAV (sticky left chapter anchors) ══ */
-.side-nav{
-  position:fixed;left:16px;top:50%;transform:translateY(-50%);
-  width:138px;z-index:200;
-  background:rgba(255,255,255,.95);backdrop-filter:blur(8px);
-  border:1px solid var(--border);border-radius:10px;
-  padding:8px 6px;box-shadow:0 4px 14px rgba(0,0,0,.05);
-}
-.side-nav-title{
-  font-family:'JetBrains Mono';font-size:9px;color:#888;
-  letter-spacing:1.5px;font-weight:700;text-transform:uppercase;
-  padding:3px 9px 7px;margin-bottom:3px;
-  border-bottom:1px dashed var(--border);
-}
-.side-nav a{
-  display:block;padding:7px 9px;font-size:11.5px;
-  color:var(--muted);text-decoration:none;border-radius:6px;
-  margin-bottom:1px;transition:all .15s;line-height:1.35;
-}
-.side-nav a:hover{background:var(--purple-bg);color:var(--purple-dk);}
-.side-nav a.active{background:var(--purple);color:#fff;font-weight:700;}
-.side-nav .nav-num{
-  font-family:'JetBrains Mono';font-size:8.5px;color:#aaa;
-  letter-spacing:1px;display:block;margin-bottom:2px;font-weight:600;
-}
-.side-nav a.active .nav-num{color:rgba(255,255,255,.75);}
-@media (max-width:1380px){.side-nav{display:none;}}
-
-/* ══ MAIN ══ */
+/* ══ MAIN (deck container) ══ */
 .main{
-  max-width:1200px;
-  margin:0 auto 60px;
-  padding:24px 28px 0;
+  position:relative;
+  width:100%;
+  height:calc(100vh - 58px);
+  margin:0;padding:0;
+  overflow:hidden;
 }
 
-/* ══ PART headers ══ */
-.part{margin-bottom:48px;}
+/* ══ PART (each = one full-screen slide) ══ */
+.part{
+  position:absolute;
+  inset:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:28px max(40px, calc((100vw - 1200px) / 2)) 80px;
+  display:none;
+  opacity:0;
+  margin-bottom:0;
+  transition:opacity .28s ease;
+}
+.part.active{display:block;opacity:1;}
+.part.part-cover.active{display:flex;align-items:center;justify-content:center;padding-top:0;padding-bottom:60px;}
+.part.part-cover .banner-card{margin:0;width:100%;max-width:1100px;}
 .part-head{
   display:flex;align-items:baseline;gap:14px;
   margin-bottom:18px;
@@ -771,11 +758,59 @@ html,body{background:var(--bg);font-family:'Noto Sans SC','PingFang SC',sans-ser
   content:'';width:3px;height:12px;background:var(--muted);border-radius:2px;
 }
 
-/* ══ FOOTER ══ */
+/* ══ FOOTER (fixed bottom-right, small) ══ */
 .footer{
-  text-align:center;font-size:10.5px;color:var(--muted);
-  padding:24px;margin-top:30px;
-  border-top:1px dashed var(--border);
+  position:fixed;bottom:14px;right:22px;z-index:50;
+  font-size:9.5px;color:var(--muted);
+  letter-spacing:.5px;
+  pointer-events:none;
+}
+
+/* ══ DECK · page controls (bottom center) ══ */
+.page-controls{
+  position:fixed;bottom:14px;left:50%;
+  transform:translateX(-50%);
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.94);
+  backdrop-filter:blur(10px);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:6px 10px;
+  box-shadow:0 4px 18px rgba(0,0,0,.08);
+  z-index:250;
+}
+.pg-btn{
+  width:30px;height:30px;border-radius:50%;
+  border:1px solid var(--border);
+  background:#fff;color:var(--text);
+  font-size:14px;line-height:1;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  transition:all .15s;
+}
+.pg-btn:hover:not(:disabled){
+  background:var(--purple);color:#fff;border-color:var(--purple);
+}
+.pg-btn:disabled{opacity:.3;cursor:not-allowed;}
+.pg-counter{
+  font-family:'JetBrains Mono','SF Mono',monospace;
+  font-size:11px;font-weight:600;color:var(--text);
+  padding:0 8px;letter-spacing:1px;min-width:50px;text-align:center;
+}
+.pg-dots{display:flex;gap:5px;padding:0 6px;}
+.pg-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--border);cursor:pointer;
+  transition:all .2s;border:none;padding:0;
+}
+.pg-dot.active{background:var(--purple);width:20px;border-radius:4px;}
+.pg-dot:hover:not(.active){background:var(--purple-dk);}
+.pg-title-overlay{
+  position:fixed;top:74px;right:24px;z-index:50;
+  font-size:10.5px;color:var(--muted);
+  font-family:'JetBrains Mono','SF Mono',monospace;
+  letter-spacing:1px;
+  pointer-events:none;
 }
 
 /* 通用 chip */
@@ -785,9 +820,7 @@ html,body{background:var(--bg);font-family:'Noto Sans SC','PingFang SC',sans-ser
   border-radius:9px;font-weight:600;margin:1px 2px;
 }
 
-/* anchor offset for sticky nav */
-.part:target{scroll-margin-top:70px;}
-.part{scroll-margin-top:70px;}
+/* (anchor offset 删除 · 每页绝对定位无需 scroll-margin) */
 
 /* ══ Planner Demo · 交互演示 ══ */
 .demo-banner{
@@ -1003,7 +1036,7 @@ html,body{background:var(--bg);font-family:'Noto Sans SC','PingFang SC',sans-ser
 
 /* ══ PART 4 · 12 Agent Demo iframe ══ */
 .agent-demo-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:8px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
-.agent-demo-iframe{width:100%;height:1020px;border:none;display:block;background:#F5F5F0;}
+.agent-demo-iframe{width:100%;height:calc(100vh - 230px);min-height:520px;border:none;display:block;background:#F5F5F0;}
 .agent-demo-foot{padding:11px 18px;background:#fafaf5;border-top:1px solid var(--border);display:flex;align-items:center;font-size:11.5px;color:var(--text);gap:14px;flex-wrap:wrap;}
 .agent-demo-foot a{color:var(--purple);font-weight:600;text-decoration:none;}
 .agent-demo-foot a:hover{text-decoration:underline;}
@@ -1021,6 +1054,7 @@ html,body{background:var(--bg);font-family:'Noto Sans SC','PingFang SC',sans-ser
   </div>
   <div class="hdr-spacer"></div>
   <nav class="hdr-nav">
+    <a href="#part0">0 · 封面</a>
     <a href="#part1">1 · AI Native 范式</a>
     <a href="#part2">2 · 六层架构</a>
     <a href="#part3">3 · 协作流程</a>
@@ -1030,21 +1064,11 @@ html,body{background:var(--bg);font-family:'Noto Sans SC','PingFang SC',sans-ser
   </nav>
 </div>
 
-<!-- ═════ Side nav (chapter anchors, sticky on left) ═════ -->
-<aside class="side-nav" id="sideNav">
-  <div class="side-nav-title">CHAPTERS · 章节</div>
-  <a href="#part1"><span class="nav-num">PART 1</span>AI Native 范式</a>
-  <a href="#part2"><span class="nav-num">PART 2</span>六层架构</a>
-  <a href="#part3"><span class="nav-num">PART 3</span>12Agent 协作流程</a>
-  <a href="#part4"><span class="nav-num">PART 4</span>12 Agent 演示</a>
-  <a href="#part5"><span class="nav-num">PART 5</span>落地路径与 KPI</a>
-  <a href="#part6"><span class="nav-num">PART 6</span>命题与挑战</a>
-</aside>
-
 <!-- ═════ Main ═════ -->
 <div class="main">
 
-<!-- ─── Part 0 · Banner ─── -->
+<!-- ─── Part 0 · 封面 ─── -->
+<section class="part part-cover" id="part0">
 <div class="banner-card">
   <div class="banner-pitch">
     <span class="banner-pitch-tag">文档定位</span>
@@ -1080,6 +1104,7 @@ html,body{background:var(--bg);font-family:'Noto Sans SC','PingFang SC',sans-ser
     </div>
   </div>
 </div>
+</section>
 
 <!-- ─── Part 1 · AI Native ─── -->
 <section class="part" id="part1">
@@ -1464,37 +1489,99 @@ html,body{background:var(--bg);font-family:'Noto Sans SC','PingFang SC',sans-ser
 
 </div>
 
+<!-- ═════ Deck · page controls ═════ -->
+<div class="page-controls" id="pageControls">
+  <button class="pg-btn" id="pgPrev" aria-label="上一页">‹</button>
+  <div class="pg-dots" id="pgDots"></div>
+  <span class="pg-counter" id="pgCounter">1 / 7</span>
+  <button class="pg-btn" id="pgNext" aria-label="下一页">›</button>
+</div>
+
 <div class="footer">
   V2.0 产品方案方向对齐与校正 v0.1 · PM Team · 2026-05-09
 </div>
 
 <script>
-// smooth scroll for all anchor links (header nav + side nav)
-document.querySelectorAll('.hdr-nav a, .side-nav a').forEach(a => {
+// ═════ Deck navigation ═════
+const partIds = ['part0','part1','part2','part3','part4','part5','part6'];
+let currentIdx = 0;
+
+// Build dots
+const dotsEl = document.getElementById('pgDots');
+partIds.forEach((id, i) => {
+  const d = document.createElement('button');
+  d.className = 'pg-dot';
+  d.setAttribute('aria-label', `第 ${i + 1} 页`);
+  d.addEventListener('click', () => showPart(i));
+  dotsEl.appendChild(d);
+});
+
+function showPart(idx){
+  idx = Math.max(0, Math.min(partIds.length - 1, idx));
+  currentIdx = idx;
+  partIds.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('active', i === idx);
+  });
+  // nav highlight
+  document.querySelectorAll('.hdr-nav a').forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + partIds[idx]);
+  });
+  // dots
+  document.querySelectorAll('.pg-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === idx);
+  });
+  // counter & buttons
+  document.getElementById('pgCounter').textContent = `${idx + 1} / ${partIds.length}`;
+  document.getElementById('pgPrev').disabled = (idx === 0);
+  document.getElementById('pgNext').disabled = (idx === partIds.length - 1);
+  // URL sync
+  history.replaceState(null, '', '#' + partIds[idx]);
+  // reset scroll of active page
+  const active = document.getElementById(partIds[idx]);
+  if (active) active.scrollTop = 0;
+}
+
+// Nav click → switch page (not anchor scroll)
+document.querySelectorAll('.hdr-nav a').forEach(a => {
   a.addEventListener('click', e => {
     const href = a.getAttribute('href');
-    if(href.startsWith('#')){
+    if (href && href.startsWith('#')) {
       e.preventDefault();
-      const target = document.querySelector(href);
-      if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+      const idx = partIds.indexOf(href.slice(1));
+      if (idx >= 0) showPart(idx);
     }
   });
 });
 
-// Side nav · highlight current chapter while scrolling
-const sideNavLinks = document.querySelectorAll('.side-nav a');
-const partSections = document.querySelectorAll('section.part');
-function updateSideNavActive(){
-  const scrollPos = window.scrollY + 120;
-  let activeId = partSections[0] ? partSections[0].id : null;
-  partSections.forEach(sec => { if(sec.offsetTop <= scrollPos) activeId = sec.id; });
-  sideNavLinks.forEach(a => {
-    a.classList.toggle('active', a.getAttribute('href') === '#' + activeId);
-  });
-}
-window.addEventListener('scroll', updateSideNavActive, {passive:true});
-window.addEventListener('resize', updateSideNavActive, {passive:true});
-updateSideNavActive();
+// Prev / Next buttons
+document.getElementById('pgPrev').addEventListener('click', () => showPart(currentIdx - 1));
+document.getElementById('pgNext').addEventListener('click', () => showPart(currentIdx + 1));
+
+// Keyboard navigation
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input, textarea, [contenteditable]')) return;
+  if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+    showPart(currentIdx + 1); e.preventDefault();
+  } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+    showPart(currentIdx - 1); e.preventDefault();
+  } else if (e.key === 'Home') {
+    showPart(0); e.preventDefault();
+  } else if (e.key === 'End') {
+    showPart(partIds.length - 1); e.preventDefault();
+  }
+});
+
+// Initial: respect URL hash, else page 0
+const initialHash = location.hash.slice(1);
+const initialIdx = partIds.indexOf(initialHash);
+showPart(initialIdx >= 0 ? initialIdx : 0);
+
+// Hash change (e.g. user manually edits URL)
+window.addEventListener('hashchange', () => {
+  const idx = partIds.indexOf(location.hash.slice(1));
+  if (idx >= 0 && idx !== currentIdx) showPart(idx);
+});
 </script>
 
 </body>
