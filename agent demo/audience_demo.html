@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Audience Agent · 互动演示 · V2.0</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{font-family:'Noto Sans SC','PingFang SC',system-ui,sans-serif;background:#F5F5F0;color:#1a1a1a;font-size:13px;line-height:1.6;display:flex;flex-direction:column;overflow:hidden;}
+
+.top{background:#1a1a1a;color:#f5f5f0;border-bottom:1px solid #000;flex-shrink:0;padding:11px 22px;display:flex;align-items:center;gap:14px;}
+.brand{display:flex;align-items:baseline;gap:8px;flex-shrink:0;}
+.brand-prefix{font-size:10px;color:#888;letter-spacing:2px;font-family:'JetBrains Mono';font-weight:600;text-transform:uppercase;}
+.brand-title{font-size:15px;font-weight:900;color:#fbbf24;letter-spacing:.5px;}
+.divider{width:1px;height:20px;background:#333;flex-shrink:0;}
+.upstream-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.35);color:#bfdbfe;padding:4px 10px;border-radius:12px;font-family:'JetBrains Mono';font-size:10px;letter-spacing:1px;font-weight:600;flex-shrink:0;}
+.upstream-pill .arr{color:#fbbf24;}
+.ctrl-label{font-size:9px;color:#666;letter-spacing:2.5px;font-family:'JetBrains Mono';font-weight:700;text-transform:uppercase;flex-shrink:0;}
+.model-select{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#eee;padding:5px 10px;border-radius:6px;font-family:'JetBrains Mono';font-size:11px;outline:none;cursor:pointer;}
+.model-select option{background:#1a1a1a;}
+.actions{display:flex;gap:6px;flex-shrink:0;}
+.btn-reset{background:transparent;border:1px solid #444;color:#aaa;padding:5px 12px;border-radius:13px;cursor:pointer;font-family:inherit;font-size:11.5px;transition:all .2s;}
+.btn-reset:hover{border-color:#888;color:#fff;}
+.controls-hint{font-size:10.5px;color:#888;font-family:'JetBrains Mono';letter-spacing:1px;margin-left:auto;text-align:right;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.step-pill{font-family:'JetBrains Mono';font-size:11px;color:#fbbf24;background:rgba(251,191,36,.1);padding:5px 11px;border-radius:10px;letter-spacing:1.5px;flex-shrink:0;}
+
+.main{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 560px;min-height:0;}
+
+.chat-panel{display:flex;flex-direction:column;background:#fafaf5;border-right:1px solid #e5e5e0;min-height:0;}
+.chat-flow{flex:1;overflow-y:auto;padding:24px 28px;display:flex;flex-direction:column;gap:14px;}
+.chat-flow::-webkit-scrollbar{width:6px;}
+.chat-flow::-webkit-scrollbar-thumb{background:#ccc;border-radius:3px;}
+
+.chat-empty{color:#aaa;font-size:12px;text-align:center;margin-top:60px;line-height:2;font-style:italic;}
+.chat-empty .ex{display:inline-block;background:#fff;border:1px solid #e5e5e0;border-radius:8px;padding:10px 16px;margin-top:14px;font-style:normal;font-size:11.5px;color:#444;cursor:pointer;transition:all .2s;text-align:left;max-width:600px;line-height:1.85;}
+.chat-empty .ex:hover{border-color:#1a1a1a;}
+.chat-empty .ex .seed-tag{display:inline-block;font-family:'JetBrains Mono';font-size:9.5px;color:#1d4ed8;font-weight:700;letter-spacing:1.5px;margin-right:6px;}
+.chat-empty .ex strong{color:#1e3a8a;background:#dbeafe;padding:1px 4px;border-radius:3px;font-weight:700;}
+
+.bubble{max-width:600px;padding:12px 16px;border-radius:12px;animation:fadeIn .4s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.bb-label{font-size:9px;letter-spacing:2px;font-family:'JetBrains Mono';font-weight:700;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.bb-body{font-size:12.5px;line-height:1.75;}
+
+.bb-customer{background:#dbeafe;border:1px solid #93c5fd;align-self:flex-end;}
+.bb-customer .bb-label{color:#1e3a8a;}
+
+.bb-agent{background:#fff;border:1px solid #e5e5e0;align-self:flex-start;border-left:3px solid #1a1a1a;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.bb-agent .bb-label{color:#444;}
+
+.bb-event{background:#1a1a1a;color:#f5f5f0;align-self:flex-start;border-radius:8px;font-family:'JetBrains Mono';font-size:11.5px;max-width:520px;}
+.bb-event .bb-label{color:#888;font-family:'JetBrains Mono';}
+.bb-event .bb-body{font-size:11.5px;line-height:1.7;}
+.bb-event-success{background:#064e38;color:#d1fae5;}
+.bb-event-success .bb-label{color:#6ee7b7;}
+
+.bb-error{background:#7f1d1d;color:#fee2e2;align-self:flex-start;border-radius:8px;}
+.bb-error .bb-label{color:#fca5a5;}
+
+.bb-loading{background:#fff;border:1px solid #e5e5e0;align-self:flex-start;border-left:3px solid #fbbf24;}
+.bb-loading .bb-label{color:#92400e;}
+.dots{display:inline-flex;gap:4px;}
+.dots span{width:6px;height:6px;border-radius:50%;background:#d97706;animation:dot 1.2s infinite ease-in-out;}
+.dots span:nth-child(2){animation-delay:.15s;}
+.dots span:nth-child(3){animation-delay:.3s;}
+@keyframes dot{0%,60%,100%{opacity:.3;transform:scale(.8);}30%{opacity:1;transform:scale(1.1);}}
+
+.fields{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin-top:10px;font-size:11.5px;}
+.fields dt{color:#888;font-family:'JetBrains Mono';font-size:10px;letter-spacing:1px;font-weight:600;}
+.fields dd{color:#1a1a1a;}
+
+.collapsible{margin:0;}
+.collapsible summary{cursor:pointer;list-style:none;padding:2px 0;font-size:12.5px;line-height:1.7;color:#1a1a1a;outline:none;display:flex;align-items:flex-start;gap:6px;}
+.collapsible summary::-webkit-details-marker{display:none;}
+.collapsible summary::before{content:'▸';color:#888;font-family:'JetBrains Mono';font-size:11px;flex-shrink:0;margin-top:1px;transition:transform .15s;}
+.collapsible[open] summary::before{transform:rotate(90deg);}
+.collapsible summary:hover{color:#d97706;}
+.bb-details{margin-top:8px;padding-top:8px;border-top:1px dashed #e5e5e0;animation:fadeIn .25s ease;}
+.summary-tag{display:inline-block;background:#1a1a1a;color:#fbbf24;font-family:'JetBrains Mono';font-size:9.5px;font-weight:700;letter-spacing:1px;padding:1px 6px;border-radius:3px;margin-right:6px;vertical-align:middle;}
+.summary-tag.ok{background:#064e38;color:#6ee7b7;}
+.summary-tag.warn{background:#78350f;color:#fcd34d;}
+.summary-tag.info{background:#1e3a8a;color:#bfdbfe;}
+
+.chat-input-wrap{flex-shrink:0;border-top:1px solid #e5e5e0;background:#fff;padding:12px 16px;}
+.chat-input{display:flex;gap:8px;align-items:flex-end;}
+.chat-input textarea{flex:1;resize:none;border:1px solid #d4d4d0;border-radius:8px;padding:9px 12px;font-family:inherit;font-size:12.5px;line-height:1.6;outline:none;background:#fafaf5;transition:all .2s;min-height:60px;max-height:200px;}
+.chat-input textarea:focus{border-color:#1a1a1a;background:#fff;}
+.chat-input textarea:disabled{opacity:.6;}
+.btn-send{background:#1a1a1a;color:#fbbf24;border:none;padding:9px 18px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;transition:all .2s;flex-shrink:0;letter-spacing:1px;}
+.btn-send:hover:not(:disabled){background:#000;}
+.btn-send:disabled{opacity:.4;cursor:not-allowed;}
+.input-hint{font-size:10px;color:#999;font-family:'JetBrains Mono';margin-top:6px;letter-spacing:.5px;}
+.input-hint .err{color:#dc2626;}
+.input-hint .ok{color:#059669;}
+
+/* Right panel — Audience matrix */
+.aud-panel{background:#fff;display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+.aud-head{padding:14px 20px 12px;border-bottom:1px solid #e5e5e0;flex-shrink:0;}
+.aud-title{font-size:12.5px;font-weight:700;color:#1a1a1a;}
+.aud-sub{font-size:9px;color:#888;letter-spacing:2px;font-family:'JetBrains Mono';margin-top:2px;}
+.aud-status{margin-top:10px;font-size:12px;font-weight:600;color:#444;padding:7px 11px;border-radius:6px;background:#fafaf5;border-left:3px solid #d4d4d0;display:flex;align-items:center;gap:8px;}
+.aud-status .st-ico{font-family:'JetBrains Mono';font-size:11px;color:#888;letter-spacing:.5px;}
+.aud-status.idle{color:#888;}
+.aud-status.active{background:#fef3c7;border-left-color:#d97706;color:#78350f;}
+.aud-status.active .st-ico{color:#d97706;}
+.aud-status.active .st-ico::after{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:#d97706;margin-left:6px;animation:blink 1s ease-in-out infinite;}
+@keyframes blink{50%{opacity:.3;}}
+.aud-status.done{background:#ecfdf5;border-left-color:#059669;color:#064e38;}
+.aud-status.done .st-ico{color:#059669;}
+
+.viz-area{flex:1;overflow-y:auto;padding:14px 16px 24px;display:flex;flex-direction:column;gap:14px;}
+.viz-area::-webkit-scrollbar{width:6px;}
+.viz-area::-webkit-scrollbar-thumb{background:#ddd;border-radius:3px;}
+
+.viz-empty{color:#bbb;font-size:11px;font-style:italic;margin:50px 0 20px;text-align:center;line-height:1.9;}
+
+/* Upstream context card */
+.ctx-card{background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #93c5fd;border-radius:8px;padding:10px 12px;animation:fadeIn .4s ease;}
+.ctx-card .ctx-head{font-size:9.5px;letter-spacing:2px;font-family:'JetBrains Mono';color:#1d4ed8;font-weight:700;margin-bottom:7px;display:flex;align-items:center;gap:6px;}
+.ctx-card .ctx-fields{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:11px;}
+.ctx-card .ctx-fields dt{color:#1d4ed8;font-family:'JetBrains Mono';font-size:9.5px;font-weight:700;letter-spacing:.5px;padding-top:1px;}
+.ctx-card .ctx-fields dd{color:#1e3a8a;line-height:1.55;}
+
+/* User type card */
+.user-card{background:#fff;border:1px solid #e5e5e0;border-radius:8px;overflow:hidden;animation:fadeIn .45s ease;}
+.user-card.p0{border-left:4px solid #059669;}
+.user-card.p1{border-left:4px solid #d97706;}
+.user-card.p2{border-left:4px solid #6b7280;}
+
+.user-head{padding:10px 12px;background:#fafaf5;border-bottom:1px solid #e5e5e0;display:flex;align-items:flex-start;gap:10px;}
+.user-tier{font-family:'JetBrains Mono';font-size:11px;font-weight:900;padding:3px 8px;border-radius:5px;letter-spacing:1px;flex-shrink:0;align-self:flex-start;}
+.user-card.p0 .user-tier{background:#d1fae5;color:#064e38;}
+.user-card.p1 .user-tier{background:#fed7aa;color:#7c2d12;}
+.user-card.p2 .user-tier{background:#e5e7eb;color:#374151;}
+.user-info{flex:1;min-width:0;}
+.user-label{font-size:13px;font-weight:800;color:#1a1a1a;line-height:1.4;}
+.user-def{font-size:11px;color:#555;margin-top:3px;line-height:1.55;}
+.user-size{font-size:10px;color:#666;margin-top:5px;font-family:'JetBrains Mono';letter-spacing:.5px;}
+.user-size strong{color:#1a1a1a;}
+.user-reason{font-size:10.5px;color:#666;margin-top:6px;font-style:italic;padding-top:6px;border-top:1px dashed #e5e5e0;}
+
+.scn-list{padding:10px 12px;display:flex;flex-direction:column;gap:8px;}
+.scn-card{background:#fafaf5;border:1px solid #e9e6db;border-radius:6px;padding:8px 10px;animation:fadeIn .35s ease;font-size:11px;}
+.scn-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:5px;}
+.scn-name{font-weight:700;font-size:11.5px;color:#1a1a1a;line-height:1.4;}
+.scn-trigger{font-family:'JetBrains Mono';font-size:9.5px;color:#666;margin-top:2px;letter-spacing:.3px;}
+.scn-trigger .tw{color:#999;}
+.scn-path{font-family:'JetBrains Mono';font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:9px;letter-spacing:1.5px;flex-shrink:0;}
+.scn-path.A{background:#fef3c7;color:#78350f;border:1px solid #fbbf24;}
+.scn-path.B{background:#fecaca;color:#7f1d1d;border:1px solid #f87171;}
+.scn-path.AB{background:#e9d5ff;color:#5b21b6;border:1px solid #a78bfa;}
+
+.scn-details{display:none;margin-top:6px;padding-top:6px;border-top:1px dashed #e9e6db;animation:fadeIn .35s ease;}
+.scn-details.show{display:block;}
+.scn-roles{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;}
+.role-chip{font-family:'JetBrains Mono';font-size:9px;background:#e0f2fe;color:#075985;padding:1px 6px;border-radius:9px;letter-spacing:.5px;font-weight:600;border:1px solid #bae6fd;}
+.scn-meta{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin-top:6px;font-size:10.5px;}
+.scn-meta dt{color:#888;font-family:'JetBrains Mono';font-size:9px;letter-spacing:.5px;font-weight:700;padding-top:1px;}
+.scn-meta dd{color:#1a1a1a;line-height:1.5;}
+
+/* L0 status bar */
+.l0-bar{display:none;margin-top:7px;padding:5px 8px;border-radius:5px;font-size:10.5px;align-items:center;justify-content:space-between;gap:8px;animation:fadeIn .4s ease;font-family:'JetBrains Mono';letter-spacing:.3px;font-weight:600;}
+.l0-bar.show{display:flex;}
+.l0-bar.pass{background:#ecfdf5;color:#064e38;border-left:3px solid #059669;}
+.l0-bar.correct{background:#fef3c7;color:#78350f;border-left:3px solid #d97706;}
+.l0-bar.downgrade{background:#fee2e2;color:#7f1d1d;border-left:3px solid #dc2626;}
+.l0-bar.pause{background:#f3f4f6;color:#4b5563;border-left:3px solid #9ca3af;}
+.l0-rate{font-weight:800;}
+.l0-note{font-size:9.5px;color:#666;font-weight:400;font-style:italic;margin-top:2px;font-family:inherit;line-height:1.5;}
+
+/* L1 mini row */
+.l1-row{display:none;margin-top:5px;padding:5px 8px;background:#eff6ff;border-radius:5px;border-left:3px solid #3b82f6;font-size:10px;font-family:'JetBrains Mono';color:#1e3a8a;letter-spacing:.3px;animation:fadeIn .4s ease;}
+.l1-row.show{display:block;}
+.l1-row .l1-head{font-weight:700;color:#1d4ed8;letter-spacing:1px;font-size:9px;margin-bottom:2px;}
+.l1-row .l1-metrics{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:2px;}
+.l1-row .l1-metrics span strong{color:#1d4ed8;}
+
+/* Reachability */
+.reach-card{background:#fff;border:1px solid #e5e5e0;border-radius:8px;padding:10px 12px;animation:fadeIn .45s ease;}
+.reach-head{font-size:9.5px;letter-spacing:2px;font-family:'JetBrains Mono';color:#666;font-weight:700;margin-bottom:8px;}
+.reach-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;}
+.reach-item{background:#fafaf5;border:1px solid #e9e6db;border-radius:5px;padding:7px 9px;font-size:10.5px;}
+.reach-item.ok{border-left:3px solid #059669;}
+.reach-item.warn{border-left:3px solid #d97706;background:#fffbeb;}
+.reach-item.fail{border-left:3px solid #dc2626;background:#fef2f2;}
+.reach-aspect{font-weight:700;font-size:11px;display:flex;align-items:center;gap:5px;}
+.reach-detail{font-size:10px;color:#666;margin-top:3px;line-height:1.55;}
+
+/* D0 admission */
+.d0-card{background:linear-gradient(135deg,#1a1a1a,#262626);color:#f5f5f0;border-radius:8px;padding:14px 16px;animation:fadeIn .5s ease;border:1px solid #404040;}
+.d0-head{font-size:10px;letter-spacing:2px;font-family:'JetBrains Mono';color:#fbbf24;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.d0-summary{font-size:12.5px;color:#fff;margin-bottom:11px;line-height:1.7;font-weight:600;}
+.d0-summary strong{color:#fbbf24;}
+.d0-section{margin-bottom:9px;}
+.d0-sect-head{font-size:9px;letter-spacing:1.5px;font-family:'JetBrains Mono';color:#888;font-weight:700;margin-bottom:3px;text-transform:uppercase;}
+.d0-tier-row{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-size:10.5px;align-items:start;}
+.d0-tier-row dt{font-family:'JetBrains Mono';font-weight:800;letter-spacing:.5px;}
+.d0-tier-row dt.p0{color:#6ee7b7;}
+.d0-tier-row dt.p1{color:#fdba74;}
+.d0-tier-row dt.p2{color:#9ca3af;}
+.d0-tier-row dd{color:#d4d4d0;line-height:1.6;}
+.d0-tier-row dd .rej{color:#fca5a5;font-style:italic;}
+.d0-paths{display:flex;gap:10px;margin-top:5px;font-size:10.5px;}
+.d0-paths .pth{font-family:'JetBrains Mono';font-weight:700;padding:3px 8px;border-radius:5px;letter-spacing:1px;}
+.d0-paths .pth.A{background:rgba(251,191,36,.15);color:#fcd34d;}
+.d0-paths .pth.B{background:rgba(248,113,113,.15);color:#fca5a5;}
+.d0-paths .pth.AB{background:rgba(168,85,247,.15);color:#d8b4fe;}
+.d0-reach{font-size:11px;color:#bfdbfe;margin-top:6px;padding:5px 9px;background:rgba(59,130,246,.1);border-left:2px solid #3b82f6;border-radius:3px;line-height:1.55;}
+.d0-next{font-size:10.5px;color:#fde68a;margin-top:8px;padding-top:7px;border-top:1px dashed #404040;line-height:1.55;font-style:italic;}
+
+strong.hi{background:#fef3c7;padding:1px 5px;border-radius:3px;font-weight:700;color:#78350f;}
+
+@media (max-width:1280px){.main{grid-template-columns:minmax(0,1fr) 480px;}}
+@media (max-width:1100px){.main{grid-template-columns:minmax(0,1fr) 420px;}.reach-grid{grid-template-columns:1fr;}}
+@media (max-width:920px){.main{grid-template-columns:1fr;grid-template-rows:1fr 1fr;}.aud-panel{border-right:none;border-top:1px solid #e5e5e0;}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="brand">
+    <span class="brand-prefix">AI 原生精准增长系统 V2.0 ·</span>
+    <span class="brand-title">Audience Agent (Live)</span>
+  </div>
+  <span class="divider"></span>
+  <span class="upstream-pill">📡 接力自 Planner<span class="arr">→</span></span>
+  <span class="divider"></span>
+  <span class="ctrl-label">Model</span>
+  <select class="model-select" id="modelSelect">
+    <option value="claude-sonnet-4-6">Sonnet 4.6 (推荐)</option>
+    <option value="claude-opus-4-7">Opus 4.7</option>
+    <option value="claude-haiku-4-5-20251001">Haiku 4.5</option>
+  </select>
+  <span class="divider"></span>
+  <div class="actions">
+    <button class="btn-reset" id="btnReset">↺ 重置</button>
+  </div>
+  <span class="controls-hint" id="hint">从 Planner 接收派发上下文，开始用户研究</span>
+  <div class="step-pill" id="stepPill">STEP 0 / 6</div>
+</div>
+
+<div class="main">
+
+  <div class="chat-panel">
+    <div class="chat-flow" id="chatFlow">
+      <div class="chat-empty" id="chatEmpty">
+        本 Agent 在 12 Agent 网络中接力自 <strong style="color:#1d4ed8;">Planner Agent</strong>。<br>
+        粘贴或填入 Planner 的派发上下文（含 Positioning + Diagnosis + 产品价值主张 + 派发任务），<br>
+        Audience 将自动展开<strong>用户定义反推 → 场景矩阵 → 决策角色 → A/B 路径 → L0/L1 验证 → D0 准入</strong>。
+        <div class="ex" id="exampleSeed">
+          <span class="seed-tag">▸ 接力示例（招财鸟 · 来自 Planner Dispatch）</span><br>
+          · <strong>Diagnosis 输出</strong>：S1 早期增长，D1 行业库初始化阶段（40 万条原始名录待分层）<br>
+          · <strong>Positioning 输出</strong>：主打"入市前侵权风险清零"的合规价值主张，差异化对标人工法务咨询<br>
+          · <strong>产品价值主张</strong>：招财鸟是面向跨境电商卖家的知识产权合规风险扫描平台<br>
+          · <strong>派发任务</strong>：对 40 万名录三维分层（产品类目 × 目标市场 × 近期入市信号），输出 P0/P1/P2 人群与场景矩阵<br>
+          <span style="color:#999;font-size:10.5px;font-family:'JetBrains Mono';">(点击填入输入框)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-input-wrap">
+      <form class="chat-input" id="chatForm">
+        <textarea id="goalInput" placeholder="粘贴或填入来自 Planner 的派发上下文：Positioning 输出 / Diagnosis 输出 / 产品价值主张 / 派发任务... (Ctrl/⌘ + Enter 发送)" rows="3"></textarea>
+        <button type="submit" class="btn-send" id="btnSend">发送 →</button>
+      </form>
+      <div class="input-hint" id="inputHint">提交后 Audience 接力解析 → 用户反推 → 场景矩阵 → L0/L1 验证 → D0 准入清单</div>
+    </div>
+  </div>
+
+  <div class="aud-panel">
+    <div class="aud-head">
+      <div class="aud-title">Audience 用户矩阵 & 验证</div>
+      <div class="aud-sub">live workflow · 用户定义反推 → 场景矩阵 → L0/L1 验证 → D0 准入</div>
+      <div class="aud-status idle" id="audStatus">
+        <span class="st-ico">STATUS</span>
+        <span class="st-text">等待 Planner 派发上下文</span>
+      </div>
+    </div>
+    <div class="viz-area" id="vizArea">
+      <div class="viz-empty" id="vizEmpty">
+        矩阵尚未生成<br>
+        ─────<br>
+        待接收派发上下文后，Audience 将自动反推用户、展开场景，<br>
+        用 <strong style="color:#3b82f6;">Persona 池</strong> 跑 L0，用<strong style="color:#3b82f6;">影子流量</strong> 跑 L1，<br>
+        最终输出 <strong style="color:#fbbf24;">D0 准入清单</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ANTHROPIC_BASE_URL = 'https://cdn.codeflow.asia';
+const ANTHROPIC_KEY = 'sk-JBY9ZGxXoW82hp8O7F5iSP4nrxInbtlGSDcuFpDeHesLukyb';
+
+const STEPS = [
+  '从 Planner 接收派发上下文，开始用户研究',
+  'STEP 1 / 6 · 接力解析 + 用户定义反推',
+  'STEP 2 / 6 · 场景矩阵展开',
+  'STEP 3 / 6 · 决策角色 + A/B/AB 路径标注',
+  'STEP 4 / 6 · L0 Persona 池验证',
+  'STEP 5 / 6 · L1 小流量 + 可触达性评估',
+  'STEP 6 / 6 · D0 准入清单输出',
+];
+
+const SEED_KEYWORD = '招财鸟';
+let usingSeedDemo = false;
+
+// ── 招财鸟种子 mock ────────────────────────────────────────────────────
+const MOCK_OUTPUT = {
+  upstream_parsed: {
+    positioning: '主打"入市前侵权风险清零"合规价值主张，差异化对标人工法务咨询',
+    diagnosis: 'S1 早期增长 / D1 行业库初始化阶段（40 万原始名录）',
+    value_prop: '面向跨境电商卖家的知识产权合规风险扫描平台',
+    dispatch_task: '对 40 万名录三维分层（产品类目 × 目标市场 × 近期入市信号），输出 P0/P1/P2 与场景矩阵',
+  },
+  user_types: [
+    {
+      tier: 'P0',
+      label: '近 90 天有新品备货的活跃卖家',
+      definition: '亚马逊 / 速卖通 / Shopify 等平台近 90 天有新 SKU 上架或备货流水记录的卖家',
+      size_estimate: '8 - 12 万条',
+      reasoning: '入市前合规扫描的强需求时点；与"侵权风险清零"价值主张最直接匹配',
+      scenarios: [
+        {
+          name: '新品备货期合规预扫',
+          trigger: '新 SKU 备货前 30 天',
+          time_window: 'T-30 至 T-7',
+          path: 'B',
+          decision_roles: ['运营', '老板'],
+          pain: '新品被投诉下架，整批库存压死无法清空',
+          low_threshold_action: '免费扫描 1 个 SKU 的侵权风险报告',
+        },
+        {
+          name: '平台大促前热销品清查',
+          trigger: '黑五 / Prime Day / 双 11 前 60 天',
+          time_window: 'T-60 至 T-30',
+          path: 'B',
+          decision_roles: ['运营', '老板'],
+          pain: '大促期间被批量投诉，损失最惨重',
+          low_threshold_action: '热销 TOP 50 合规体检（限免）',
+        },
+        {
+          name: '切入新类目前的雷区评估',
+          trigger: '决定上新类目的决策节点',
+          time_window: '决策窗口期',
+          path: 'A',
+          decision_roles: ['老板', '运营'],
+          pain: '不知道新类目专利雷区分布在哪',
+          low_threshold_action: '新类目侵权热点报告下载',
+        },
+      ],
+    },
+    {
+      tier: 'P1',
+      label: '近 30 天有侵权风险事件的卖家',
+      definition: '已收到平台投诉通知 / 海关查扣 / 商标投诉的卖家',
+      size_estimate: '5 - 8 万条',
+      reasoning: '已发生事件需求强度极高、但盘子较小；典型"事件等待型" B 类核心场景',
+      scenarios: [
+        {
+          name: '收到 VeRO 投诉后应对',
+          trigger: 'Amazon VeRO / 速卖通投诉通知 24h 内',
+          time_window: 'T+0 至 T+3',
+          path: 'B',
+          decision_roles: ['法务', '老板'],
+          pain: '难判断是真侵权还是恶意投诉；应对失误账号被封',
+          low_threshold_action: '免费投诉应对策略咨询',
+        },
+        {
+          name: '海关查扣后全店审查',
+          trigger: '海关查扣通知后 7 天内',
+          time_window: 'T+0 至 T+7',
+          path: 'B',
+          decision_roles: ['老板', '法务'],
+          pain: '怕其他 SKU 也有同样问题，被连环查扣',
+          low_threshold_action: '全店 SKU 合规体检（限时）',
+        },
+      ],
+    },
+    {
+      tier: 'P2',
+      label: '一般跨境卖家（教育激发型）',
+      definition: '40 万原始名录中未在 P0 / P1 的常规活跃卖家',
+      size_estimate: '20 - 25 万条',
+      reasoning: '长尾教育型受众，需通过 A 类内容长期培育，转化周期长',
+      scenarios: [
+        {
+          name: '行业合规科普触达',
+          trigger: '日常浏览跨境内容',
+          time_window: '常驻',
+          path: 'A',
+          decision_roles: ['运营'],
+          pain: '不了解专利风险的严重性',
+          low_threshold_action: '"5 大跨境侵权误区"长图下载',
+        },
+        {
+          name: '同行大案曝光后的自查',
+          trigger: '行业大案 / 罚单曝光时',
+          time_window: '热点驱动',
+          path: 'A',
+          decision_roles: ['老板'],
+          pain: '想知道自己是否也有类似风险',
+          low_threshold_action: '案例复盘 + 自查清单',
+        },
+      ],
+    },
+  ],
+  l0_results: [
+    { tier: 'P0', scenario_idx: 0, status: 'pass', rate: 89, sample: 500, note: 'B 类强需求时点契合，决策角色一致' },
+    { tier: 'P0', scenario_idx: 1, status: 'pass', rate: 84, sample: 500, note: '大促前焦虑被显著激发' },
+    { tier: 'P0', scenario_idx: 2, status: 'correct', rate: 61, sample: 500, note: '新类目决策周期长，部分 Persona 偏向同行咨询而非工具' },
+    { tier: 'P1', scenario_idx: 0, status: 'pass', rate: 92, sample: 500, note: 'VeRO 投诉是 P1 最强触发点，紧迫性极高' },
+    { tier: 'P1', scenario_idx: 1, status: 'pass', rate: 86, sample: 500, note: '海关事件后的连带焦虑明确' },
+    { tier: 'P2', scenario_idx: 0, status: 'correct', rate: 54, sample: 500, note: 'A 类需求强度低，需要更强钩子或更精准内容' },
+    { tier: 'P2', scenario_idx: 1, status: 'pass', rate: 71, sample: 500, note: '同行案例驱动有效，依赖热点时机' },
+  ],
+  l1_results: [
+    { tier: 'P0', scenario_idx: 0, ctr: '2.4%', conversion: '21%', sample: '1.2 万曝光', note: '高于行业基准（1.5-2.0%）' },
+    { tier: 'P0', scenario_idx: 1, ctr: '1.9%', conversion: '17%', sample: '1.0 万曝光', note: '达到基准水位' },
+    { tier: 'P1', scenario_idx: 0, ctr: '4.1%', conversion: '33%', sample: '8000 曝光', note: '远超基准，验证 B 类高 ROI' },
+    { tier: 'P1', scenario_idx: 1, ctr: '3.2%', conversion: '24%', sample: '6000 曝光', note: '验证 B 类有效' },
+    { tier: 'P2', scenario_idx: 1, ctr: '1.1%', conversion: '8%', sample: '1.5 万曝光', note: '勉强达到基准，需结合热点投放' },
+  ],
+  reachability: [
+    { aspect: '数据库字段', status: 'ok', detail: '40 万名录含店铺 ID / 平台 / 类目 / 备货时间，可支撑三维分层' },
+    { aspect: '信号可采集', status: 'ok', detail: 'VeRO / 海关查扣 / 商标投诉事件流已由 Signal Agent 监听就位' },
+    { aspect: '渠道可达', status: 'warn', detail: 'P0 / P1 邮箱覆盖度 62%，企微补充至 81%；P2 邮箱低覆盖，需依赖站外广告' },
+    { aspect: '合规状态', status: 'ok', detail: '名录数据已通过 Compliance Agent 预审，GDPR 豁免清单已生成' },
+  ],
+  d0_admission: {
+    summary: 'P0 准入 <strong>2 / 3</strong> 个场景 (1 个修正后再评)，P1 全部 <strong>2 / 2</strong> 准入，P2 准入 <strong>1 / 2</strong> 场景',
+    p0: { admitted: ['新品备货期合规预扫', '平台大促前热销品清查'], rejected_or_correct: ['切入新类目前的雷区评估（修正）'] },
+    p1: { admitted: ['收到 VeRO 投诉后应对', '海关查扣后全店审查'], rejected_or_correct: [] },
+    p2: { admitted: ['同行大案曝光后的自查'], rejected_or_correct: ['行业合规科普触达（修正）'] },
+    path_distribution: { A: 1, B: 4, AB: 0 },
+    estimated_reach: 'P0 覆盖约 8-12 万 + P1 覆盖约 5-8 万 + P2 准入 ~25 万长尾 = D0 总覆盖 38-45 万人次',
+    next_actions: '场景集合移交 Signal / Creative / Orchestration；P1 事件型场景优先排期；P0 大促场景按月历预排；P2 长尾内容池作为持续资产',
+  },
+};
+
+const SYSTEM_PROMPT = `你是 AI 原生精准增长系统 V2.0 的 Audience Agent。你接力自 Planner Agent，输入是上游派发的上下文（含 Positioning 输出、Diagnosis 输出、产品价值主张、派发任务）。输出完整的用户定义反推、场景矩阵、L0/L1 验证结果、可触达性评估和 D0 准入清单。
+
+严格只输出有效 JSON，不要任何额外文字、解释或 markdown 代码块。
+所有 JSON 字段值用中文（除产品名 / 数字 / 单位 / 路径符号 A/B/AB 外），口吻专业克制，避免营销腔。
+内容必须紧贴上游输入，不要空泛套话。`;
+
+let currentStep = 0;
+let result = null;
+let userInputText = '';
+
+const $ = id => document.getElementById(id);
+const chatFlow = $('chatFlow');
+const chatEmpty = $('chatEmpty');
+const goalInput = $('goalInput');
+const btnSend = $('btnSend');
+const modelSelect = $('modelSelect');
+const inputHint = $('inputHint');
+const vizArea = $('vizArea');
+const vizEmpty = $('vizEmpty');
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+const savedModel = localStorage.getItem('anthropic_model');
+if (savedModel) modelSelect.value = savedModel;
+modelSelect.addEventListener('change', () => localStorage.setItem('anthropic_model', modelSelect.value));
+
+$('exampleSeed').addEventListener('click', () => {
+  goalInput.value = '来自 Planner 的派发：\n- Diagnosis 输出：S1 早期增长，D1 行业库初始化阶段，40 万原始名录待分层\n- Positioning 输出：主打"入市前侵权风险清零"的合规价值主张，差异化对标人工法务咨询\n- 产品价值主张：招财鸟是面向跨境电商卖家的知识产权合规风险扫描平台\n- 派发任务：对 40 万名录执行三维分层（产品类目 × 目标市场 × 近期入市信号），输出 P0/P1/P2 人群与场景矩阵';
+  usingSeedDemo = true;
+  goalInput.focus();
+});
+goalInput.addEventListener('input', () => { usingSeedDemo = false; });
+
+async function callClaudeOnce(systemPrompt, userPrompt, maxTokens) {
+  const res = await fetch(ANTHROPIC_BASE_URL.replace(/\/+$/,'') + '/v1/messages', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-api-key': ANTHROPIC_KEY,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify({
+      model: modelSelect.value,
+      max_tokens: maxTokens,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userPrompt }],
+    }),
+  });
+  if (!res.ok) throw new Error(`API ${res.status}: ${(await res.text()).slice(0,200)}`);
+  const data = await res.json();
+  if (data.error) throw new Error(`API error: ${JSON.stringify(data.error).slice(0,240)}`);
+  let raw = '';
+  if (Array.isArray(data.content)) raw = data.content.filter(b => b && b.type === 'text').map(b => b.text || '').join('').trim();
+  else if (typeof data.content === 'string') raw = data.content.trim();
+  const stopReason = data.stop_reason || 'unknown';
+  if (!raw) throw new Error(`LLM 返回内容为空 (stop=${stopReason})`);
+  raw = raw.replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/i,'').trim();
+  const first = raw.indexOf('{');
+  const last = raw.lastIndexOf('}');
+  if (first >= 0 && last > first) raw = raw.slice(first, last+1);
+  try { return JSON.parse(raw); }
+  catch(e) {
+    if (stopReason === 'max_tokens') throw new Error(`输出被截断（max_tokens=${maxTokens} 用尽）`);
+    throw new Error(`JSON 解析失败 (stop=${stopReason})：${raw.slice(0,240)}`);
+  }
+}
+
+async function callClaude(systemPrompt, userPrompt, maxTokens = 6000) {
+  let lastErr;
+  for (let attempt = 0; attempt <= 2; attempt++) {
+    try { return await callClaudeOnce(systemPrompt, userPrompt, maxTokens); }
+    catch (err) {
+      lastErr = err;
+      const isNet = err.message === 'Failed to fetch' || err.message.includes('NetworkError') || err.message.includes('fetch');
+      if (isNet && attempt < 2) { await sleep(1800 * (attempt+1)); continue; }
+      throw err;
+    }
+  }
+  throw lastErr;
+}
+
+async function llmRun(text) {
+  if (usingSeedDemo || text.includes(SEED_KEYWORD)) {
+    await sleep(2400);
+    return MOCK_OUTPUT;
+  }
+  const userPrompt = `[STAGE: audience full run]
+基于以下来自 Planner 的派发上下文，输出完整 Audience 工作流结果。
+
+上游派发上下文：
+"""
+${text}
+"""
+
+约束：
+- 必须先把上游输入抽取为 upstream_parsed 四字段
+- user_types 输出 3 个分层 (P0 / P1 / P2)，每类含 label / definition / size_estimate / reasoning，并枚举 2-3 个具体 scenarios
+- 每个 scenario 必须包含：name / trigger / time_window / path（仅 A/B/AB 之一）/ decision_roles（数组，从 使用者/决策者/付费者/影响者/渠道者 派生具体岗位）/ pain / low_threshold_action
+- l0_results 对所有 scenarios 都给结果；status ∈ ['pass','correct','downgrade','pause']；rate 数字 0-100；sample=500；note 一句话
+- l1_results 只对 l0 status='pass' 的 scenarios 给数据；ctr / conversion / sample 都给具体值；note 一句话
+- reachability 4 项，aspect 固定为：数据库字段 / 信号可采集 / 渠道可达 / 合规状态；status ∈ ['ok','warn','fail']；至多 1 项非 ok
+- d0_admission 含 summary / p0 / p1 / p2 (各含 admitted 和 rejected_or_correct 数组) / path_distribution / estimated_reach / next_actions
+- summary 可含 <strong> HTML 标签做关键数字高亮
+
+只输出 JSON：
+{
+  "upstream_parsed": {"positioning":"...","diagnosis":"...","value_prop":"...","dispatch_task":"..."},
+  "user_types": [
+    {
+      "tier": "P0",
+      "label": "...",
+      "definition": "...",
+      "size_estimate": "...",
+      "reasoning": "...",
+      "scenarios": [
+        {"name":"...","trigger":"...","time_window":"...","path":"B","decision_roles":["..."],"pain":"...","low_threshold_action":"..."}
+      ]
+    }
+  ],
+  "l0_results": [{"tier":"P0","scenario_idx":0,"status":"pass","rate":89,"sample":500,"note":"..."}],
+  "l1_results": [{"tier":"P0","scenario_idx":0,"ctr":"2.4%","conversion":"21%","sample":"...","note":"..."}],
+  "reachability": [{"aspect":"数据库字段","status":"ok","detail":"..."}],
+  "d0_admission": {
+    "summary":"...",
+    "p0":{"admitted":["..."],"rejected_or_correct":["..."]},
+    "p1":{"admitted":["..."],"rejected_or_correct":[]},
+    "p2":{"admitted":["..."],"rejected_or_correct":["..."]},
+    "path_distribution":{"A":0,"B":0,"AB":0},
+    "estimated_reach":"...",
+    "next_actions":"..."
+  }
+}`;
+  return await callClaude(SYSTEM_PROMPT, userPrompt, 8000);
+}
+
+// ── UI helpers ────────────────────────────────────────────────────
+function reset() {
+  currentStep = 0;
+  result = null;
+  userInputText = '';
+  usingSeedDemo = false;
+  chatFlow.innerHTML = '';
+  chatFlow.appendChild(chatEmpty);
+  chatEmpty.style.display = 'block';
+  vizArea.innerHTML = '';
+  vizArea.appendChild(vizEmpty);
+  vizEmpty.style.display = 'block';
+  goalInput.disabled = false;
+  goalInput.value = '';
+  btnSend.disabled = false;
+  inputHint.innerHTML = '提交后 Audience 接力解析 → 用户反推 → 场景矩阵 → L0/L1 验证 → D0 准入清单';
+  setStatus('等待 Planner 派发上下文', 'idle');
+  updateUI();
+}
+
+function updateUI() {
+  $('stepPill').textContent = currentStep === 0 ? 'STEP 0 / 6' : `STEP ${currentStep} / 6`;
+  $('hint').textContent = STEPS[currentStep];
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function appendBubble(html, type, label) {
+  if (chatEmpty.parentElement === chatFlow) chatEmpty.style.display = 'none';
+  const div = document.createElement('div');
+  div.className = `bubble ${type}`;
+  div.innerHTML = `${label ? `<div class="bb-label">${label}</div>` : ''}<div class="bb-body">${html}</div>`;
+  chatFlow.appendChild(div);
+  setTimeout(() => chatFlow.scrollTop = chatFlow.scrollHeight, 50);
+  return div;
+}
+
+function appendLoading(label, body) {
+  if (chatEmpty.parentElement === chatFlow) chatEmpty.style.display = 'none';
+  const div = document.createElement('div');
+  div.className = 'bubble bb-loading';
+  div.innerHTML = `<div class="bb-label">${label}</div><div class="bb-body">${body} <span class="dots"><span></span><span></span><span></span></span></div>`;
+  chatFlow.appendChild(div);
+  setTimeout(() => chatFlow.scrollTop = chatFlow.scrollHeight, 50);
+  return div;
+}
+
+function setStatus(text, mode = 'active') {
+  const el = $('audStatus');
+  el.classList.remove('idle','active','done');
+  el.classList.add(mode);
+  el.querySelector('.st-text').textContent = text;
+  const ico = { idle:'IDLE', active:'RUNNING', done:'DONE' }[mode] || mode.toUpperCase();
+  el.querySelector('.st-ico').textContent = ico;
+}
+
+function collapsible(summaryHtml, detailsHtml, opts = {}) {
+  const open = opts.open !== false ? 'open' : '';
+  return `<details class="collapsible" ${open}>
+    <summary><span style="flex:1;">${summaryHtml}</span></summary>
+    <div class="bb-details">${detailsHtml}</div>
+  </details>`;
+}
+
+// ── Render functions for right panel ────────────────────────────────
+function renderUpstreamCtx(parsed) {
+  vizEmpty.style.display = 'none';
+  const card = document.createElement('div');
+  card.className = 'ctx-card';
+  card.id = 'ctxCard';
+  card.innerHTML = `
+    <div class="ctx-head">📡 上游接力上下文 · FROM PLANNER</div>
+    <dl class="ctx-fields">
+      <dt>Positioning</dt><dd>${escapeHtml(parsed.positioning || '')}</dd>
+      <dt>Diagnosis</dt><dd>${escapeHtml(parsed.diagnosis || '')}</dd>
+      <dt>价值主张</dt><dd>${escapeHtml(parsed.value_prop || '')}</dd>
+      <dt>派发任务</dt><dd>${escapeHtml(parsed.dispatch_task || '')}</dd>
+    </dl>
+  `;
+  vizArea.appendChild(card);
+}
+
+function renderUserTypesShells(types) {
+  types.forEach((t, idx) => {
+    const card = document.createElement('div');
+    card.className = `user-card ${t.tier.toLowerCase()}`;
+    card.id = `userCard-${idx}`;
+    card.innerHTML = `
+      <div class="user-head">
+        <div class="user-tier">${escapeHtml(t.tier)}</div>
+        <div class="user-info">
+          <div class="user-label">${escapeHtml(t.label)}</div>
+          <div class="user-def">${escapeHtml(t.definition)}</div>
+          <div class="user-size">规模估算：<strong>${escapeHtml(t.size_estimate)}</strong></div>
+          <div class="user-reason">${escapeHtml(t.reasoning)}</div>
+        </div>
+      </div>
+      <div class="scn-list" id="scnList-${idx}"></div>
+    `;
+    vizArea.appendChild(card);
+  });
+}
+
+function addScenarioBasicRow(userIdx, scnIdx, scn) {
+  const list = $(`scnList-${userIdx}`);
+  const card = document.createElement('div');
+  card.className = 'scn-card';
+  card.id = `scn-${userIdx}-${scnIdx}`;
+  card.innerHTML = `
+    <div class="scn-head">
+      <div>
+        <div class="scn-name">${escapeHtml(scn.name)}</div>
+        <div class="scn-trigger">触发：${escapeHtml(scn.trigger)} <span class="tw">· ${escapeHtml(scn.time_window)}</span></div>
+      </div>
+    </div>
+    <div class="scn-details" id="scnDetails-${userIdx}-${scnIdx}"></div>
+    <div class="l0-bar" id="l0-${userIdx}-${scnIdx}"></div>
+    <div class="l1-row" id="l1-${userIdx}-${scnIdx}"></div>
+  `;
+  list.appendChild(card);
+}
+
+function fillScenarioRolesAndPath(userIdx, scnIdx, scn) {
+  const card = $(`scn-${userIdx}-${scnIdx}`);
+  const head = card.querySelector('.scn-head');
+  const pathBadge = document.createElement('div');
+  pathBadge.className = `scn-path ${scn.path}`;
+  pathBadge.textContent = scn.path + ' 类';
+  head.appendChild(pathBadge);
+
+  const det = $(`scnDetails-${userIdx}-${scnIdx}`);
+  const roleChips = (scn.decision_roles || []).map(r => `<span class="role-chip">${escapeHtml(r)}</span>`).join('');
+  det.innerHTML = `
+    <div class="scn-roles">${roleChips}</div>
+    <dl class="scn-meta">
+      <dt>痛点</dt><dd>${escapeHtml(scn.pain)}</dd>
+      <dt>低门槛行动</dt><dd>${escapeHtml(scn.low_threshold_action)}</dd>
+    </dl>
+  `;
+  det.classList.add('show');
+}
+
+function showL0Result(r) {
+  const userIdx = result.user_types.findIndex(t => t.tier === r.tier);
+  if (userIdx < 0) return;
+  const bar = $(`l0-${userIdx}-${r.scenario_idx}`);
+  if (!bar) return;
+  const statusLabel = { pass:'✅ PASS', correct:'⚠ 修正', downgrade:'✖ 降级', pause:'⏸ 暂停' }[r.status] || r.status;
+  bar.className = `l0-bar show ${r.status}`;
+  bar.innerHTML = `
+    <div>
+      <div>L0 Persona 验证 · ${statusLabel}</div>
+      <div class="l0-note">${escapeHtml(r.note || '')}</div>
+    </div>
+    <div class="l0-rate">${r.rate}% / ${r.sample} Persona</div>
+  `;
+}
+
+function showL1Result(r) {
+  const userIdx = result.user_types.findIndex(t => t.tier === r.tier);
+  if (userIdx < 0) return;
+  const row = $(`l1-${userIdx}-${r.scenario_idx}`);
+  if (!row) return;
+  row.className = 'l1-row show';
+  row.innerHTML = `
+    <div class="l1-head">L1 小流量影子验证</div>
+    <div class="l1-metrics">
+      <span>CTR <strong>${escapeHtml(r.ctr)}</strong></span>
+      <span>转化 <strong>${escapeHtml(r.conversion)}</strong></span>
+      <span>样本 <strong>${escapeHtml(r.sample)}</strong></span>
+    </div>
+    <div style="font-size:9.5px;color:#1d4ed8;opacity:.8;font-style:italic;">${escapeHtml(r.note || '')}</div>
+  `;
+}
+
+function showReachability(items) {
+  const card = document.createElement('div');
+  card.className = 'reach-card';
+  let grid = '';
+  (items || []).forEach(it => {
+    const ico = it.status === 'ok' ? '✓' : it.status === 'warn' ? '⚠' : '✖';
+    grid += `<div class="reach-item ${it.status}">
+      <div class="reach-aspect">${ico} ${escapeHtml(it.aspect)}</div>
+      <div class="reach-detail">${escapeHtml(it.detail)}</div>
+    </div>`;
+  });
+  card.innerHTML = `
+    <div class="reach-head">REACHABILITY · 可触达性评估</div>
+    <div class="reach-grid">${grid}</div>
+  `;
+  vizArea.appendChild(card);
+}
+
+function showD0Admission(d0) {
+  const card = document.createElement('div');
+  card.className = 'd0-card';
+  const renderTier = (tier, data) => {
+    if (!data) return '';
+    const admitted = (data.admitted || []).map(s => escapeHtml(s)).join('、') || '<span class="rej">无</span>';
+    const rej = (data.rejected_or_correct || []).map(s => `<span class="rej">${escapeHtml(s)}</span>`).join('、');
+    return `<dt class="${tier.toLowerCase()}">${tier}</dt><dd>${admitted}${rej ? '；' + rej : ''}</dd>`;
+  };
+  const paths = d0.path_distribution || {};
+  card.innerHTML = `
+    <div class="d0-head">🎯 D0 准入清单 · DOWNSTREAM HANDOFF</div>
+    <div class="d0-summary">${d0.summary || ''}</div>
+    <div class="d0-section">
+      <div class="d0-sect-head">准入场景分级</div>
+      <dl class="d0-tier-row">
+        ${renderTier('P0', d0.p0)}
+        ${renderTier('P1', d0.p1)}
+        ${renderTier('P2', d0.p2)}
+      </dl>
+    </div>
+    <div class="d0-section">
+      <div class="d0-sect-head">路径分布</div>
+      <div class="d0-paths">
+        <span class="pth A">A · 教育激发 × ${paths.A || 0}</span>
+        <span class="pth B">B · 事件等待 × ${paths.B || 0}</span>
+        <span class="pth AB">AB · 混合 × ${paths.AB || 0}</span>
+      </div>
+    </div>
+    <div class="d0-reach">📊 ${escapeHtml(d0.estimated_reach || '')}</div>
+    <div class="d0-next">→ 下游交接：${escapeHtml(d0.next_actions || '')}</div>
+  `;
+  vizArea.appendChild(card);
+}
+
+// ── Main flow ────────────────────────────────────────────────────
+async function handleSubmit() {
+  const text = goalInput.value.trim();
+  if (!text) { inputHint.innerHTML = '<span class="err">⚠ 输入不能为空</span>'; return; }
+  userInputText = text;
+  goalInput.disabled = true;
+  btnSend.disabled = true;
+  inputHint.innerHTML = '<span class="ok">Audience 接力解析中…</span>';
+
+  setStatus('STEP 1 · 接力解析 + 用户定义反推中…', 'active');
+  appendBubble(escapeHtml(text).replace(/\n/g, '<br>'), 'bb-customer', '📡 上游 · 来自 PLANNER DISPATCH');
+  goalInput.value = '';
+  const loading = appendLoading('🧠 Audience · 接力解析', '解析上游上下文 + 用户反推 + 场景生成');
+
+  try {
+    result = await llmRun(text);
+    loading.remove();
+    await autoAdvance();
+  } catch (err) {
+    loading.remove();
+    appendBubble('调用失败：' + escapeHtml(err.message || String(err)), 'bb-error', '❌ ERROR');
+    goalInput.disabled = false;
+    btnSend.disabled = false;
+    setStatus('调用失败，可重试', 'idle');
+    inputHint.innerHTML = '<span class="err">调用失败，稍后重试</span>';
+  }
+}
+
+async function autoAdvance() {
+  // STEP 1 · 接力解析 + 用户定义反推
+  currentStep = 1; updateUI();
+  setStatus('STEP 1 · 接力解析 + 用户定义反推', 'active');
+
+  const p = result.upstream_parsed || {};
+  const ctxSummary = `<span class="summary-tag info">✓ 4 字段</span>已解析 Positioning / Diagnosis / 价值主张 / 派发任务`;
+  const ctxDetails = `<dl class="fields">
+    <dt>Positioning</dt><dd>${escapeHtml(p.positioning || '')}</dd>
+    <dt>Diagnosis</dt><dd>${escapeHtml(p.diagnosis || '')}</dd>
+    <dt>价值主张</dt><dd>${escapeHtml(p.value_prop || '')}</dd>
+    <dt>派发任务</dt><dd>${escapeHtml(p.dispatch_task || '')}</dd>
+  </dl>`;
+  appendBubble(collapsible(ctxSummary, ctxDetails, { open: false }), 'bb-agent', '🧠 Audience · 上游接力解析');
+  renderUpstreamCtx(p);
+
+  await sleep(700);
+  const types = result.user_types || [];
+  const userSummary = `<span class="summary-tag ok">✓ ${types.length} 类用户</span>` + types.map(t => `${t.tier}·${t.label}`).join(' / ');
+  const userDetails = types.map(t => `<div style="margin-bottom:6px;">
+    <strong>${escapeHtml(t.tier)} · ${escapeHtml(t.label)}</strong>（${escapeHtml(t.size_estimate)}）<br>
+    <span style="color:#666;font-size:11px;">${escapeHtml(t.reasoning)}</span>
+  </div>`).join('');
+  appendBubble(
+    `从产品价值主张反推：<strong class="hi">什么样的人天然需要这个价值？</strong><br><br>` +
+    collapsible(userSummary, userDetails, { open: false }),
+    'bb-agent', '🧠 Audience · 用户定义反推'
+  );
+  renderUserTypesShells(types);
+
+  // STEP 2 · 场景矩阵展开
+  await sleep(1600);
+  currentStep = 2; updateUI();
+  setStatus('STEP 2 · 场景矩阵展开', 'active');
+  const totalScn = types.reduce((s, t) => s + (t.scenarios || []).length, 0);
+  appendBubble(
+    `对每类用户枚举具体场景（含触发事件 + 时间窗）。<br><br>本轮共生成 <strong class="hi">${totalScn}</strong> 个候选场景。`,
+    'bb-agent', '🧠 Audience · 场景矩阵展开'
+  );
+  for (let i = 0; i < types.length; i++) {
+    const scns = types[i].scenarios || [];
+    for (let j = 0; j < scns.length; j++) {
+      addScenarioBasicRow(i, j, scns[j]);
+      await sleep(150);
+    }
+  }
+
+  // STEP 3 · 决策角色 + A/B/AB 路径
+  await sleep(1200);
+  currentStep = 3; updateUI();
+  setStatus('STEP 3 · 决策角色 + A/B/AB 路径标注', 'active');
+  const paths = { A: 0, B: 0, AB: 0 };
+  types.forEach(t => (t.scenarios || []).forEach(s => paths[s.path] = (paths[s.path] || 0) + 1));
+  appendBubble(
+    `为每个场景标注决策角色（使用者 / 决策者 / 付费者 / 影响者 / 渠道者派生）+ <strong class="hi">A/B/AB 路径</strong>：<br>` +
+    `· <strong>A 教育激发</strong>：${paths.A} 个（需长期内容培育）<br>` +
+    `· <strong>B 事件等待</strong>：${paths.B} 个（监听信号即触发）<br>` +
+    `· <strong>AB 混合</strong>：${paths.AB} 个`,
+    'bb-agent', '🧠 Audience · 决策角色 + 路径标注'
+  );
+  for (let i = 0; i < types.length; i++) {
+    const scns = types[i].scenarios || [];
+    for (let j = 0; j < scns.length; j++) {
+      fillScenarioRolesAndPath(i, j, scns[j]);
+      await sleep(120);
+    }
+  }
+
+  // STEP 4 · L0 Persona 池验证
+  await sleep(1400);
+  currentStep = 4; updateUI();
+  setStatus('STEP 4 · L0 Persona 池验证中…', 'active');
+  appendBubble(
+    `调用 <strong class="hi">Persona 池</strong>（500 个跨境卖家合成 Persona）模拟每个场景的反应——<br>` +
+    `<strong>无需人工访谈、无需销售复盘</strong>，小时级完成。<br><br>` +
+    `输出 4 类结论：<strong style="color:#059669;">通过</strong> / <strong style="color:#d97706;">修正</strong> / <strong style="color:#dc2626;">降级</strong> / <strong style="color:#6b7280;">暂停</strong>`,
+    'bb-agent', '🧠 Audience · L0 Persona 池验证'
+  );
+  const l0 = result.l0_results || [];
+  for (let i = 0; i < l0.length; i++) {
+    showL0Result(l0[i]);
+    await sleep(180);
+  }
+  const passCnt = l0.filter(r => r.status === 'pass').length;
+  appendBubble(
+    `<strong>L0 完成</strong>：${passCnt} / ${l0.length} 场景通过；${l0.filter(r => r.status === 'correct').length} 个需修正，` +
+    `${l0.filter(r => r.status === 'downgrade').length} 个降级，${l0.filter(r => r.status === 'pause').length} 个暂停。<br><br>` +
+    `只有通过的场景才进入 L1 小流量。`,
+    'bb-event bb-event-success', '📡 EVENT · L0 RESULTS'
+  );
+
+  // STEP 5 · L1 小流量 + 可触达性
+  await sleep(1400);
+  currentStep = 5; updateUI();
+  setStatus('STEP 5 · L1 小流量验证 + 可触达性评估', 'active');
+  appendBubble(
+    `对 L0 通过的 ${passCnt} 个场景做 <strong class="hi">影子流量 A/B 测试</strong>（标题 / 落地页对照），<br>` +
+    `1-2 天内得到客观行为数据；同时对所有通过场景做可触达性评估（数据 / 信号 / 渠道 / 合规）。`,
+    'bb-agent', '🧠 Audience · L1 + 可触达性评估'
+  );
+  const l1 = result.l1_results || [];
+  for (let i = 0; i < l1.length; i++) {
+    showL1Result(l1[i]);
+    await sleep(180);
+  }
+  await sleep(400);
+  showReachability(result.reachability || []);
+
+  // STEP 6 · D0 准入清单
+  await sleep(1600);
+  currentStep = 6; updateUI();
+  setStatus('STEP 6 · 输出 D0 准入清单 · 移交下游', 'active');
+  const d0 = result.d0_admission || {};
+  appendBubble(
+    `综合 L0 / L1 / 可触达性，输出最终 <strong class="hi">D0 准入清单</strong>。<br><br>` +
+    `通过的场景集合移交至下游 <strong>Signal / Creative / Orchestration</strong>。<br>` +
+    `<span style="color:#1d4ed8;font-size:11.5px;">📌 学习反馈同步回流至 Reflection Agent，持续优化 Persona 池准确率</span>`,
+    'bb-agent', '🧠 Audience · D0 准入清单'
+  );
+  await sleep(450);
+  showD0Admission(d0);
+
+  setTimeout(() => {
+    setStatus('✓ Audience 工作流完成 · D0 准入清单已移交下游', 'done');
+    inputHint.innerHTML = '<span class="ok">✓ 流程完成，D0 准入清单已生成。点 ↺ 重置 重新开始</span>';
+  }, 1200);
+}
+
+// ── Events ────────────────────────────────────────────────────
+$('chatForm').addEventListener('submit', e => { e.preventDefault(); handleSubmit(); });
+goalInput.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); handleSubmit(); }
+});
+$('btnReset').addEventListener('click', reset);
+
+reset();
+</script>
+</body>
+</html>

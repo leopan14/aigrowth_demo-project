@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>AI 原生精准增长系统 V2.0 · 12 Agent 协作流程(以"冷启动 1 个 SaaS 客户"为例)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#F2F1ED;
+  --surface:#FFFFFF;
+  --border:#DDDBD3;
+  --text:#1A1A18;
+  --muted:#8C8A84;
+
+  /* Agent category colors */
+  --teal:#1D9E75;   --teal-bg:#E1F5EE;   --teal-dk:#064E38;
+  --blue:#1860A8;   --blue-bg:#E4F0FB;   --blue-dk:#0B3D6E;
+  --amber:#B87210;  --amber-bg:#FEF0D8;  --amber-dk:#5C3800;
+  --coral:#A83820;  --coral-bg:#FAE9E5;  --coral-dk:#4A1B0C;
+  --purple:#4A42B0; --purple-bg:#ECEAFE; --purple-dk:#221D5C;
+
+  /* Mode colors (= edge stroke colors) */
+  --m-seq:#1860A8;
+  --m-par:#4A42B0;
+  --m-rea:#B87210;
+  --m-sup:#A83820;
+  --m-fbk:#1D9E75;
+  --m-data:#8C8A84;
+}
+html,body{background:var(--bg);font-family:'Noto Sans SC','PingFang SC',sans-serif;color:var(--text);}
+
+/* ══ HEADER ══ */
+.hdr{
+  position:sticky;top:0;z-index:300;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:10px 24px;
+}
+.hdr h1{font-size:14px;font-weight:700;}
+.hdr p {font-size:10px;color:var(--muted);margin-top:3px;}
+
+/* ══ Stage Tabs(顶部 · 流程条样式)══ */
+.stages{
+  position:sticky;top:53px;z-index:280;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:11px 24px;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.stages-label{font-size:11px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.05em;margin-right:4px;}
+
+.stage-btn{
+  border:1.5px solid var(--border);
+  background:var(--surface);
+  color:var(--text);
+  cursor:pointer;
+  transition:all .15s;
+  font-family:inherit;
+}
+.stage-btn:hover{border-color:var(--purple);}
+
+/* "全部"按钮——重置/概览,圆角药丸,与流程条用竖线分隔 */
+.stage-btn-reset{
+  padding:7px 14px;
+  border-radius:18px;
+  font-size:11.5px;font-weight:600;
+}
+.stage-btn-reset.active{
+  background:#1A1A18;border-color:#1A1A18;color:#fff;
+}
+
+/* 流程条容器 */
+.stage-flow{
+  display:flex;align-items:center;gap:0;flex-wrap:wrap;
+  border-left:1.5px solid var(--border);
+  padding-left:14px;
+}
+
+/* 流程步骤按钮——左圆徽章 + 右文字两行 */
+.flow-step{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:5px 11px 5px 5px;
+  border-radius:6px;
+  font-size:11.5px;
+  position:relative;
+}
+.flow-step .flow-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:24px;height:24px;border-radius:50%;
+  background:var(--bg);color:var(--text);
+  font-size:12px;font-weight:800;
+  border:1.5px solid var(--border);
+  flex-shrink:0;
+  transition:all .15s;
+}
+.flow-step .flow-text{
+  display:flex;flex-direction:column;align-items:flex-start;
+  line-height:1.2;
+}
+.flow-step .flow-name{font-size:11.5px;font-weight:600;color:var(--text);}
+.flow-step .flow-step-num{font-size:9px;color:var(--muted);margin-top:1px;font-weight:500;}
+
+.flow-step:hover .flow-badge{background:var(--purple-bg);border-color:var(--purple);color:var(--purple-dk);}
+.flow-step.active{background:var(--purple);border-color:var(--purple);}
+.flow-step.active .flow-badge{background:#fff;color:var(--purple);border-color:#fff;}
+.flow-step.active .flow-name{color:#fff;}
+.flow-step.active .flow-step-num{color:rgba(255,255,255,.85);}
+
+/* 流程箭头连接 */
+.flow-arrow{
+  font-size:14px;color:#B5B3AC;
+  margin:0 3px;
+  user-select:none;font-weight:600;
+}
+
+/* ══ MAIN canvas ══ */
+.main{
+  max-width:1280px;
+  margin:18px auto 80px;
+  padding:0 14px;
+}
+.canvas{
+  position:relative;
+  width:100%;
+  height:1080px;
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:14px;
+  box-shadow:0 4px 16px rgba(0,0,0,.04);
+  overflow:hidden;
+}
+
+/* ══ Stage bands(横向 A-E + 纵向 F)══ */
+.stage-band{
+  position:absolute;
+  background:linear-gradient(90deg,rgba(0,0,0,0) 0%, rgba(0,0,0,.012) 100%);
+  border-bottom:1px dashed #E8E6E0;
+}
+.stage-band.alt{background:linear-gradient(90deg,rgba(0,0,0,0) 0%, rgba(0,0,0,.025) 100%);}
+.stage-band-vertical{
+  background:linear-gradient(180deg,rgba(29,158,117,.04) 0%, rgba(29,158,117,.08) 100%);
+  border-bottom:none;
+  border-left:1px dashed rgba(29,158,117,.3);
+}
+
+.stage-tag{
+  position:absolute;
+  width:88px;
+  font-size:10px;font-weight:700;
+  color:var(--muted);
+  letter-spacing:.04em;
+  z-index:8;
+  line-height:1.4;
+}
+.stage-tag .stage-id{
+  display:inline-block;
+  font-size:13px;font-weight:800;color:var(--text);
+  background:var(--bg);
+  padding:2px 8px;border-radius:4px;
+  margin-bottom:4px;
+}
+.stage-tag .stage-name{display:block;font-size:10px;color:var(--text);margin-bottom:2px;}
+.stage-tag .stage-mode{font-size:9px;color:var(--muted);font-style:italic;}
+.stage-tag .stage-step{font-size:9px;color:var(--muted);}
+.stage-tag.vertical{
+  width:120px;
+}
+.stage-tag.vertical .stage-id{background:rgba(29,158,117,.18);color:var(--teal-dk);}
+
+/* ══ Nodes ══ */
+.agent, .ext-node{
+  position:absolute;
+  background:var(--surface);
+  border-radius:8px;
+  z-index:10;
+  box-shadow:0 2px 6px rgba(0,0,0,.05);
+  transition:opacity .3s, filter .3s, box-shadow .25s, transform .25s;
+}
+.agent{
+  border:2px solid;
+  padding:8px 12px 9px;
+  cursor:pointer;
+}
+.ext-node{
+  border:1.5px dashed var(--muted);
+  background:#F8F6F0;
+  padding:8px 12px;
+  font-size:11px;font-weight:600;
+  color:var(--muted);
+  text-align:center;
+}
+
+.agent.c-teal  {border-color:var(--teal);  background:var(--teal-bg);}
+.agent.c-blue  {border-color:var(--blue);  background:var(--blue-bg);}
+.agent.c-amber {border-color:var(--amber); background:var(--amber-bg);}
+.agent.c-purple{border-color:var(--purple);background:var(--purple-bg);}
+.agent.c-coral {border-color:var(--coral); background:var(--coral-bg);}
+.agent .a-id-row{display:flex;align-items:center;gap:5px;margin-bottom:3px;}
+.agent .a-icon{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:20px;height:20px;border-radius:50%;
+  background:rgba(255,255,255,.92);
+  color:inherit;
+  flex-shrink:0;
+  box-shadow:inset 0 0 0 1.5px currentColor;
+}
+.agent .a-icon svg{display:block;}
+.agent.c-teal   .a-icon{color:var(--teal);}
+.agent.c-blue   .a-icon{color:var(--blue);}
+.agent.c-amber  .a-icon{color:var(--amber);}
+.agent.c-purple .a-icon{color:var(--purple);}
+.agent.c-coral  .a-icon{color:var(--coral);}
+.agent .a-id{
+  font-size:9px;font-weight:800;
+  padding:1px 6px;border-radius:8px;
+  background:rgba(255,255,255,.7);
+  color:var(--text);letter-spacing:.5px;
+}
+.agent .a-step{
+  font-size:9px;color:var(--muted);font-weight:700;
+  padding:1px 5px;border-radius:8px;
+  background:rgba(255,255,255,.55);
+}
+.agent .a-name{font-size:13px;font-weight:700;line-height:1.2;}
+.agent .a-sub{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.3;}
+
+.agent.c-teal   .a-name{color:var(--teal-dk);}
+.agent.c-blue   .a-name{color:var(--blue-dk);}
+.agent.c-amber  .a-name{color:var(--amber-dk);}
+.agent.c-purple .a-name{color:var(--purple-dk);}
+.agent.c-coral  .a-name{color:var(--coral-dk);}
+
+.agent:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 14px rgba(0,0,0,.12);
+}
+.agent.highlighted{
+  box-shadow:0 0 0 3px var(--purple),0 8px 20px rgba(74,66,176,.32);
+  z-index:30;
+  transform:scale(1.04);
+}
+.agent.dimmed{opacity:.32;}
+
+/* ══ Stage completion states ══
+   设计原则:用户关注的是"进行中",所以:
+   - active(进行中)→ 视觉权重最大:脉动光环 + 顶部"进行中"标签 + 边粗体流动
+   - done(已完成)→ 退场:opacity 0.45 + 去饱和 + ✓ 缩小变灰
+   - pending(未完成)→ 静默:opacity 0.18 + 灰度
+*/
+.agent.stage-active, .ext-node.stage-active{
+  z-index:28;
+  animation:pulse-active 1.8s ease-in-out infinite;
+}
+@keyframes pulse-active{
+  0%, 100% {
+    box-shadow:0 0 0 3px var(--purple),
+               0 0 22px rgba(74,66,176,.42),
+               0 8px 22px rgba(74,66,176,.30);
+  }
+  50% {
+    box-shadow:0 0 0 5px var(--purple),
+               0 0 38px rgba(74,66,176,.62),
+               0 14px 32px rgba(74,66,176,.50);
+  }
+}
+.agent.stage-active::before, .ext-node.stage-active::before{
+  content:'进行中';
+  position:absolute;
+  top:-12px;left:50%;
+  transform:translateX(-50%);
+  background:var(--purple);
+  color:#fff;
+  font-size:9.5px;font-weight:800;
+  padding:2px 9px;
+  border-radius:10px;
+  white-space:nowrap;
+  letter-spacing:.08em;
+  z-index:36;
+  box-shadow:0 3px 8px rgba(74,66,176,.45);
+  animation:label-bob 1.8s ease-in-out infinite;
+}
+@keyframes label-bob{
+  0%,100% { transform:translateX(-50%) translateY(0); }
+  50%     { transform:translateX(-50%) translateY(-2px); }
+}
+
+.agent.stage-done, .ext-node.stage-done{
+  opacity:.45;
+  filter:saturate(.45);
+}
+.agent.stage-done::after, .ext-node.stage-done::after{
+  content:'✓';
+  position:absolute;
+  top:-6px;right:-6px;
+  width:14px;height:14px;
+  border-radius:50%;
+  background:#B5B3AC;
+  color:#fff;
+  font-size:9px;font-weight:700;
+  text-align:center;line-height:14px;
+  z-index:35;
+}
+
+.agent.stage-pending, .ext-node.stage-pending{
+  opacity:.18;
+  filter:grayscale(.95);
+}
+.agent.stage-pending::after, .ext-node.stage-pending::after{
+  content:'⋯';
+  position:absolute;
+  top:-6px;right:-6px;
+  width:14px;height:14px;
+  border-radius:50%;
+  background:#D5D3CC;
+  color:#fff;
+  font-size:10px;font-weight:700;
+  text-align:center;line-height:12px;
+  z-index:35;
+}
+
+/* ══ SVG layer ══ */
+.canvas-svg{
+  position:absolute;
+  inset:0;
+  width:100%;height:100%;
+  pointer-events:none;
+  z-index:7;
+  overflow:visible;
+}
+.canvas-svg path{
+  fill:none;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  transition:opacity .3s,stroke-width .3s;
+}
+.canvas-svg path.dimmed{opacity:.10;}
+.canvas-svg path.stage-pending{opacity:.04 !important;}
+.canvas-svg path.stage-done-edge{opacity:.30;}
+.canvas-svg path.highlighted{
+  stroke-width:3.5;
+}
+.canvas-svg path.flowing{
+  stroke-dasharray:8 6;
+  animation:flow .8s linear infinite;
+}
+.canvas-svg path.flowing.highlighted{
+  animation:flow .55s linear infinite;
+  stroke-width:3.8;
+}
+@keyframes flow{
+  to{stroke-dashoffset:-14;}
+}
+.canvas-svg .edge-label{
+  font-family:'Noto Sans SC',sans-serif;
+  font-size:9.5px;font-weight:600;
+}
+
+/* ══ Mode info panel(底部常驻)══ */
+.mode-info{
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:8px;
+  padding:12px 16px;
+  margin:14px 0 0;
+  font-size:11.5px;color:var(--text);
+  line-height:1.55;
+}
+.mode-info-title{font-weight:700;font-size:12.5px;margin-bottom:4px;}
+.mode-info-quote{
+  font-style:italic;
+  border-left:3px solid var(--purple);
+  padding-left:10px;margin:5px 0;
+}
+.mode-info-eg{font-size:10.5px;color:var(--muted);margin-top:3px;}
+.mode-info-eg::before{content:'原文示例: ';font-weight:700;color:var(--purple-dk);font-style:normal;}
+
+/* ══ Hover tooltip(共享给阶段按钮 + 协作模式按钮)══ */
+.mode-tooltip{
+  position:absolute;
+  z-index:400;
+  max-width:520px;
+  background:var(--surface);
+  border:1.5px solid var(--purple);
+  border-radius:8px;
+  box-shadow:0 8px 24px rgba(0,0,0,.18);
+  padding:13px 15px;
+  font-size:11.5px;line-height:1.6;color:var(--text);
+  display:none;pointer-events:none;
+}
+.mode-tooltip.show{display:block;}
+.mode-tooltip-source{
+  font-size:9.5px;color:var(--purple);
+  text-transform:uppercase;letter-spacing:.08em;
+  font-weight:700;margin-bottom:5px;
+}
+.mode-tooltip-name{font-size:13px;font-weight:700;margin-bottom:6px;color:var(--purple-dk);}
+.mode-tooltip-quote{
+  font-size:11.5px;color:var(--text);
+  background:var(--purple-bg);
+  padding:8px 10px;border-radius:5px;
+  border-left:3px solid var(--purple);
+  margin:5px 0;
+}
+.mode-tooltip-eg{font-size:10.5px;color:var(--muted);margin-top:6px;font-style:italic;}
+.mode-tooltip-eg::before{content:'原文示例: ';font-weight:700;color:var(--blue-dk);font-style:normal;}
+.mode-tooltip-meta{font-size:10.5px;color:var(--text);margin-top:6px;}
+.mode-tooltip-meta strong{color:var(--purple-dk);}
+
+/* ══ Contract panel ══ */
+.contract-panel{
+  position:fixed;
+  bottom:18px;left:50%;
+  transform:translateX(-50%);
+  background:var(--surface);
+  border:1.5px solid var(--purple);
+  border-radius:10px;
+  padding:14px 18px;
+  width:min(960px, calc(100vw - 40px));
+  box-shadow:0 12px 40px rgba(0,0,0,.20);
+  display:none;z-index:500;
+}
+.contract-panel.show{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;}
+.cp-head{
+  grid-column:1/-1;
+  display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  margin-bottom:6px;padding-bottom:8px;
+  border-bottom:1.5px solid var(--purple-bg);
+}
+.cp-agent-id{font-size:10px;font-weight:700;color:var(--purple);
+  background:var(--purple-bg);padding:2px 9px;border-radius:11px;}
+.cp-agent-name{font-size:14px;font-weight:700;}
+.cp-agent-sub{font-size:11px;color:var(--muted);}
+.cp-coop{font-size:10px;color:var(--muted);}
+.cp-task{
+  grid-column:1/-1;
+  font-size:11.5px;color:var(--text);line-height:1.6;
+  margin-bottom:6px;padding-bottom:8px;
+  border-bottom:1px dashed var(--border);
+}
+.cp-section h4{
+  font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;
+  color:var(--muted);margin-bottom:6px;
+  padding-bottom:4px;border-bottom:1.5px solid;
+}
+.cp-section.critic h4{border-color:var(--teal);color:var(--teal-dk);}
+.cp-section.esc h4{border-color:var(--coral);color:var(--coral-dk);}
+.cp-section.kpi h4{border-color:var(--blue);color:var(--blue-dk);}
+.cp-section ul{list-style:none;padding:0;}
+.cp-section li{
+  font-size:11px;line-height:1.55;
+  padding-left:14px;position:relative;
+  margin-bottom:3px;color:var(--text);
+}
+.cp-section.critic li::before{content:'✓';position:absolute;left:0;color:var(--teal);font-weight:700;}
+.cp-section.esc li::before{content:'⚡';position:absolute;left:0;color:var(--coral);}
+.cp-section.kpi li::before{content:'◆';position:absolute;left:0;color:var(--blue);font-size:8px;top:3px;}
+.cp-close{
+  position:absolute;top:10px;right:12px;
+  font-size:16px;color:var(--muted);
+  cursor:pointer;border:none;background:none;
+  padding:2px 7px;border-radius:4px;
+}
+.cp-close:hover{background:var(--bg);}
+
+/* ══ LEGEND ══ */
+.legend{
+  position:fixed;bottom:14px;left:14px;
+  background:rgba(255,255,255,.96);
+  border:1px solid var(--border);border-radius:6px;
+  padding:9px 12px;font-size:10px;color:var(--muted);
+  display:flex;flex-direction:column;gap:6px;z-index:200;
+  box-shadow:0 4px 12px rgba(0,0,0,.06);
+  max-width:340px;
+}
+.legend-title{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;}
+.legend-section{display:flex;flex-wrap:wrap;gap:6px;}
+.legend .li{display:flex;align-items:center;gap:5px;font-size:9.5px;color:var(--text);}
+.legend .li-box{width:11px;height:11px;border-radius:3px;border:1.3px solid;}
+
+/* legend 内的协作模式紧凑按钮 */
+.legend-modes{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px;}
+.lg-mode-btn{
+  font-size:9.5px;font-weight:600;
+  padding:3px 8px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:#fff;cursor:pointer;
+  display:inline-flex;align-items:center;gap:4px;
+  color:var(--text);
+  transition:all .12s;
+}
+.lg-mode-btn .swatch{width:11px;height:2.5px;border-radius:1px;display:inline-block;}
+.lg-mode-btn:hover{border-color:#888;}
+.lg-mode-btn.active{color:#fff;border-color:#1A1A18;}
+.lg-mode-btn[data-mode="all"].active        {background:#1A1A18;border-color:#1A1A18;}
+.lg-mode-btn[data-mode="sequential"].active {background:var(--m-seq);border-color:var(--m-seq);}
+.lg-mode-btn[data-mode="parallel"].active   {background:var(--m-par);border-color:var(--m-par);}
+.lg-mode-btn[data-mode="reactive"].active   {background:var(--m-rea);border-color:var(--m-rea);}
+.lg-mode-btn[data-mode="supervisory"].active{background:var(--m-sup);border-color:var(--m-sup);}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="hdr">
+  <h1>AI 原生精准增长系统 V2.0 · 12 Agent 协作流程</h1>
+  <p>主轴:V2.0 第三章 3.2 节"冷启动一个 SaaS 客户"典型协作链路 · 顶部切阶段(完成度) · 左下角切协作模式(边色筛选) · 点 Agent 看 Critic/升级/KPI</p>
+</div>
+
+<!-- Top: 运作流程 -->
+<div class="stages">
+  <span class="stages-label">运作流程:</span>
+  <button class="stage-btn stage-btn-reset active" data-stage="all">显示全部</button>
+  <div class="stage-flow">
+    <button class="stage-btn flow-step" data-stage="A">
+      <span class="flow-badge">A</span>
+      <span class="flow-text"><span class="flow-name">接入</span><span class="flow-step-num">Step 1</span></span>
+    </button>
+    <span class="flow-arrow">→</span>
+    <button class="stage-btn flow-step" data-stage="B">
+      <span class="flow-badge">B</span>
+      <span class="flow-text"><span class="flow-name">诊断与战略</span><span class="flow-step-num">Step 2-6</span></span>
+    </button>
+    <span class="flow-arrow">→</span>
+    <button class="stage-btn flow-step" data-stage="C">
+      <span class="flow-badge">C</span>
+      <span class="flow-text"><span class="flow-name">内容与触达</span><span class="flow-step-num">Step 7</span></span>
+    </button>
+    <span class="flow-arrow">→</span>
+    <button class="stage-btn flow-step" data-stage="D">
+      <span class="flow-badge">D</span>
+      <span class="flow-text"><span class="flow-name">监督拦截</span><span class="flow-step-num">Step 8</span></span>
+    </button>
+    <span class="flow-arrow">→</span>
+    <button class="stage-btn flow-step" data-stage="E">
+      <span class="flow-badge">E</span>
+      <span class="flow-text"><span class="flow-name">销售承接</span><span class="flow-step-num">Step 9</span></span>
+    </button>
+    <span class="flow-arrow">↻</span>
+    <button class="stage-btn flow-step" data-stage="F">
+      <span class="flow-badge">F</span>
+      <span class="flow-text"><span class="flow-name">学习闭环</span><span class="flow-step-num">Step 10-11</span></span>
+    </button>
+  </div>
+</div>
+
+<!-- Hover tooltip -->
+<div class="mode-tooltip" id="modeTooltip"></div>
+
+<!-- Main canvas -->
+<div class="main">
+  <div class="canvas" id="canvas">
+    <svg class="canvas-svg" id="canvasSvg" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr-seq"  viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="#1860A8" stroke-width="1.5" stroke-linecap="round"/></marker>
+        <marker id="arr-par"  viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="#4A42B0" stroke-width="1.5" stroke-linecap="round"/></marker>
+        <marker id="arr-rea"  viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="#B87210" stroke-width="1.5" stroke-linecap="round"/></marker>
+        <marker id="arr-sup"  viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="#A83820" stroke-width="1.5" stroke-linecap="round"/></marker>
+        <marker id="arr-fbk"  viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></marker>
+        <marker id="arr-data" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="#8C8A84" stroke-width="1.5" stroke-linecap="round"/></marker>
+      </defs>
+    </svg>
+  </div>
+  <div class="mode-info" id="modeInfo"></div>
+</div>
+
+<!-- Contract panel -->
+<div class="contract-panel" id="contractPanel">
+  <button class="cp-close" id="cpClose">×</button>
+  <div class="cp-head">
+    <div class="cp-agent-id" id="cpId"></div>
+    <div class="cp-agent-name" id="cpName"></div>
+    <div class="cp-agent-sub" id="cpSub"></div>
+    <div class="cp-coop" id="cpCoop"></div>
+  </div>
+  <div class="cp-task" id="cpTask"></div>
+  <div class="cp-section critic"><h4>Critic 自验证机制</h4><ul id="cpCritic"></ul></div>
+  <div class="cp-section esc"><h4>升级到人触发条件</h4><ul id="cpEsc"></ul></div>
+  <div class="cp-section kpi"><h4>关键 KPI</h4><ul id="cpKpi"></ul></div>
+</div>
+
+<!-- Legend(Agent 类别 + 协作模式按钮)-->
+<div class="legend">
+  <div class="legend-title">Agent 类别(节点底色)</div>
+  <div class="legend-section">
+    <div class="li"><div class="li-box" style="background:var(--teal-bg);border-color:var(--teal);"></div>战略</div>
+    <div class="li"><div class="li-box" style="background:var(--amber-bg);border-color:var(--amber);"></div>数据</div>
+    <div class="li"><div class="li-box" style="background:var(--blue-bg);border-color:var(--blue);"></div>用户</div>
+    <div class="li"><div class="li-box" style="background:var(--purple-bg);border-color:var(--purple);"></div>执行</div>
+    <div class="li"><div class="li-box" style="background:var(--coral-bg);border-color:var(--coral);"></div>治理</div>
+  </div>
+  <div class="legend-title" style="margin-top:4px;">协作模式(线色筛选)</div>
+  <div class="legend-modes">
+    <button class="lg-mode-btn active" data-mode="all"><span class="swatch" style="background:#1A1A18"></span>全部</button>
+    <button class="lg-mode-btn" data-mode="sequential"><span class="swatch" style="background:var(--m-seq)"></span>顺序</button>
+    <button class="lg-mode-btn" data-mode="parallel"><span class="swatch" style="background:var(--m-par)"></span>并行</button>
+    <button class="lg-mode-btn" data-mode="reactive"><span class="swatch" style="background:var(--m-rea)"></span>反应</button>
+    <button class="lg-mode-btn" data-mode="supervisory"><span class="swatch" style="background:var(--m-sup)"></span>监督</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════
+   数据来源: V2.0 docx 第三章 3.2 + 3.3 + 第四章 4.3
+   流程主轴: 第 3.2 节"冷启动一个 SaaS 客户"典型协作链路 11 步
+   ═══════════════════════════════════════════ */
+
+// 机器人图标(突出"虚拟员工"语义,所有 Agent 共用,色由 .a-icon 继承)
+const ROBOT_ICON = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2.5" x2="12" y2="5.5"/><circle cx="12" cy="2.2" r="1" fill="currentColor" stroke="none"/><rect x="4.5" y="6.5" width="15" height="12" rx="2"/><circle cx="9" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="1.1" fill="currentColor" stroke="none"/><line x1="9" y1="15.5" x2="15" y2="15.5"/></svg>`;
+
+// ── 12 Agent 详情 ──
+const AGENTS = {
+  planner:       {id:'A1', name:'Planner', sub:'规划编排 · 总指挥', layer:'L2', color:'teal',
+    task:'接收客户高阶目标,把目标拆解成可执行子任务,动态生成调用 DAG,监控执行进度,处理异常和重规划。Planner 不直接产生业务输出,但它决定其他所有 Agent 何时被调用。',
+    critic:['覆盖度: DAG 是否覆盖客户目标的所有关键约束','依赖检查: 是否存在循环依赖或缺失依赖','成本估算: Token/API/时间是否在预算内','风险检查: 高风险 Agent 调用是否配套 Resolver 拦截','合规预审: DAG 中触达类动作是否经过 Compliance 预审'],
+    escalations:['客户目标无法解析或自相矛盾','Diagnosis 发现授权数据无法支持目标','执行成本超过客户预算 N%','关键 Agent 连续失败超阈值','发现潜在严重合规风险'],
+    kpis:['Plan 成功率','Plan 修订次数','升级率','规划-执行延迟']},
+  diagnosis:     {id:'A2', name:'Diagnosis', sub:'企业诊断 · 体检医生', layer:'L3', color:'teal',
+    task:'判断客户处于哪个增长阶段(S0-S4),客户的数据资产成熟度如何(D0-D4)。诊断结果直接决定 Planner 启用哪些能力、Resolver 设置什么阈值、Sales Agent 是否激进。',
+    critic:['分类器置信度低于阈值 → 自动降级到保守模式','数据源缺失或质量低 → 输出"不完整诊断"并请求补数据','LLM Critic 检查诊断结论是否与已知行业基准冲突'],
+    escalations:['数据完整度低于 30%','阶段分类结果在两个差异较大阶段间摇摆','发现严重数据合规问题'],
+    kpis:['诊断准确率(6 个月业绩验证)','诊断时长(小时级)','误诊率']},
+  positioning:   {id:'A3', name:'Positioning', sub:'定位与表达 · 战略顾问', layer:'L3', color:'teal',
+    task:'生成业务定位、品牌表达体系(Slogan、价值主张、差异化、品类表达),并通过 Persona 池和影子流量验证选优。这是 V1.0 步骤 3-6 的人工卡点被解构后的核心 Agent。',
+    critic:['一致性 Critic: 定位与产品真实能力一致','差异化 Critic: 与竞品有真实区分','可证明性 Critic: 主张有可证据支持','合规 Critic: 检查广告法绝对化用语','Persona Critic: 模拟用户读到第一反应,识别误解'],
+    escalations:['Top 2 候选影子流量效果都低于行业基准 N%','候选与客户既有品牌资产严重冲突','法务红线告警','客户在 L1 主动按下回滚按钮'],
+    kpis:['30 天核心指标提升','回滚率','Persona 预验证-真实流量相关性']},
+  audience:      {id:'A4', name:'Audience', sub:'用户与场景 · 用研', layer:'L3', color:'blue',
+    task:'从产品价值反推用户定义,展开场景×需求矩阵,识别决策角色,完成 8B 强制验证卡点。把 V1.0 的人工访谈和销售复盘换成 Persona 池预验证 + 自动小流量轻验证。',
+    critic:['反推一致性: 用户定义与产品价值匹配','场景具体性: 不允许"成长型企业"这种宽泛描述','可识别性: 场景能否被数据库字段或外部信号识别','Persona 反应阈值: L0 通过率必须达到预设阈值'],
+    escalations:['所有候选人群 L0 验证均不通过 → 回到 Positioning','场景矩阵覆盖度评分低于阈值','P0 人群完全不可触达'],
+    kpis:['场景验证通过率','L0 与 L2 一致率','D0 准入场景的转化漏斗表现']},
+  signal:        {id:'A5', name:'Signal', sub:'信号雷达 · 雷达兵', layer:'L3', color:'blue',
+    task:'对所有候选信号源做吸纳评估,建立外部信号监听管道,识别用户的需求显现状态(D0-D5),计算 timing_score,触发 B 类场景的事件型触达。',
+    critic:['信号源稳定性: API 失败率 / 爬虫被封率','误报率: 信号触发后 N 天无响应的比例','漏报回测: 历史成交客户当时是否遗漏信号','置信度校准: timing_score 准确率'],
+    escalations:['信号源大面积失效','误报率超阈值','发现新型重要信号但不在合规白名单内'],
+    kpis:['信号源覆盖率','信号→线索转化率','timing_score 预测准确率','B 类 SLA 达成率']},
+  knowledge:     {id:'A12', name:'Knowledge', sub:'知识沉淀 · 图书馆员', layer:'L3', color:'amber',
+    task:'构建并维护行业知识图谱、平台行业潜客库、Persona 池、行业模板库。V1.0 中由 3 个角色负责的工作,V2.0 中由 Knowledge Agent 自动完成 80%。',
+    critic:['图谱一致性: 实体类型符合 schema','Persona 覆盖度: 是否覆盖所有 P0 场景','模板有效性: 灰度期实际表现 vs Persona 预测','数据质量: Q1/Q2 比例下降时自动告警'],
+    escalations:['新行业冷启动(D0 → D1)需人工设计种子','数据源大面积变化','模板候选与人工经验冲突','法规变化导致字段或来源需调整'],
+    kpis:['行业库 D 级提升速度','Persona 预测-真实反应相关性','模板复用率','灰度通过率']},
+  creative:      {id:'A6', name:'Creative', sub:'创意生成 · 创意总监', layer:'L3', color:'purple',
+    task:'根据用户人群、需求状态、表达体系、敏感点生成多模态创意素材:邮件、落地页、广告、短视频脚本、企微话术、销售证据包文案。每个素材都自带多变体和合规自审标记。',
+    critic:['品牌一致性: 与 Positioning 表达体系对照','合规预审: 广告法 / 行业法规 / 品牌底线词三层过滤','Persona 反应预测: 识别可能引起反感的表达','跨内容去重: 同一用户短窗口内不收到雷同表达'],
+    escalations:['品牌敏感场景需要人工 review','Persona 反应预测的负面率超阈值','合规自审多次失败仍无法生成可用变体','客户主动设置"本周内容人工审阅"开关'],
+    kpis:['创意生产周期(目标小时级)','CTR / 停留 / 转化率','合规拦截率','Persona 预测相关性']},
+  orchestration: {id:'A7', name:'Orchestration', sub:'触达编排 · 渠道指挥', layer:'L3', color:'purple',
+    task:'把目标人群、需求状态、信号上下文、表达角度、渠道组合、预算、频控、承接节点拼装成可执行的触达任务。关键提升是"按触达任务排期"而不是"按渠道排期"。',
+    critic:['装配一致性: task 字段完整、合理','预算合理性: 单 task 预算在客户级范围内','承接容量: 销售容量能承接预期线索','停损规则: 所有 task 必须有明确 stop_rule'],
+    escalations:['Resolver 拒绝率超阈值','CPL 偏离基准 N 倍且自动停损未生效','承接容量持续不足'],
+    kpis:['CPL(场景/渠道/人群)','跨渠道频控达标率','停损及时性','放大正确率']},
+  resolver:      {id:'A9', name:'Resolver', sub:'冲突裁决 · 调度官', layer:'L3', color:'coral',
+    task:'在任何触达执行前做最后一道裁决:合规检查、负向行为检查、销售接管检查、状态实时重判、频率冲突等 10 步检查。全部去除人工审批分支,改用 Policy + 异常熔断。',
+    critic:['决策可追溯: 每个 Resolver 决策记录依据/规则/阈值','反向校验: 周期抽样让 LLM 复审','规则冲突检测: 多规则矛盾时按 合规 > 项目 > 行业 > 默认 顺序'],
+    escalations:['规则冲突无法自动裁决','拒绝率超基准 N 倍','出现新型未在规则中的场景'],
+    kpis:['决策延迟(毫秒级)','误拦率','漏拦率','规则覆盖度']},
+  compliance:    {id:'A10', name:'Compliance', sub:'合规治理 · 纪委', layer:'L3+L6', color:'coral',
+    task:'把 V1.0 横向治理层的合规规则全部转化为 Policy-as-Code,在所有数据采集、触达执行、回流处理动作之前自动审计。Resolver 检查业务规则,Compliance 检查法律和监管规则。',
+    critic:['一致性校验: 同类案例不同时间结果一致','阈值校准: 被申诉成功的案例反馈调整阈值','规则版本管理: 法规变化时旧规则归档、新规则灰度'],
+    escalations:['L2 软规则置信度低于阈值','出现新型违规模式','法规变化未及时同步','客户投诉或监管查询'],
+    kpis:['误拦率与漏拦率','合规决策延迟','法规更新到落地时间','合规事件 / 投诉数']},
+  sales:         {id:'A8', name:'Sales', sub:'AI 销售承接 · 销售前锋', layer:'L3', color:'purple',
+    task:'V2.0 相对 V1.0 最大的能力跃迁。直接和客户对话——通过邮件、IM、表单回复甚至语音通话与潜在客户沟通,完成首次接触、答疑、预约。复杂场景升级人类销售。',
+    critic:['回复 Critic: 每条回复发出前自检(合规、品牌、事实)','RAG 命中检查: 未命中时降级(转问澄清问题)','情绪偏离检查: 客户情绪逐步恶化时主动升级','反幻觉护栏: 产品/价格/承诺必须基于 RAG 命中'],
+    escalations:['客户主动提出报价 / 合同 / 法务问题','客单价或预期合同金额超阈值','客户表达明显负面情绪','对话超 N 轮无进展','客户身份是关键决策人(CEO/CFO/CTO)','RAG 多次未命中','客户明确说"我想找真人"'],
+    kpis:['接管率','升级率与升级准确率','MQL → SQL 转化率','客户体感满意度','人力工时节省']},
+  reflection:    {id:'A11', name:'Reflection', sub:'复盘学习 · 总参谋', layer:'L3', color:'coral',
+    task:'在所有 Agent 执行后做归因、复盘、权重学习、模板候选识别。V1.0 的复盘和权重维护需要运营专家手工做,V2.0 的 Reflection 自动完成 90% 工作,人只看月度报告与异常告警。',
+    critic:['归因稳定性: 同一事件不同时间归因结果稳定','权重更新熔断: 单次调整超出限制时拒绝','反事实回测: 用历史数据回测当前权重的预测能力'],
+    escalations:['权重连续两次同方向调整 → 人工复核','定位权重不自动更新','根因分析未能定位明确原因'],
+    kpis:['归因准确率','权重更新带来的指标提升','模板候选通用性','异常告警命中率']},
+};
+
+// ── 节点位置(swim-lane;Stage F 在右侧侧栏)──
+// canvas: 1240w × 1080h; 主区域 0-940; 侧栏 940-1220
+const NODES = [
+  // Stage A
+  {id:'client',        type:'ext',   stage:'A', label:'<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;color:#1A1A18;"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.6 3.1-6.2 7-6.2s7 2.6 7 6.2"/></svg>客户<br><span style="font-size:10px;font-weight:400;">输入目标</span>',
+                       cx:530, cy:60,   w:200, h:54},
+  {id:'planner',       type:'agent', stage:'A', step:'Step 1', cx:530, cy:155, w:170, h:70},
+
+  // Stage B
+  {id:'diagnosis',     type:'agent', stage:'B', step:'Step 2', cx:190, cy:340, w:170, h:70},
+  {id:'positioning',   type:'agent', stage:'B', step:'Step 3', cx:380, cy:340, w:170, h:70},
+  {id:'audience',      type:'agent', stage:'B', step:'Step 4', cx:570, cy:340, w:170, h:70},
+  {id:'signal',        type:'agent', stage:'B', step:'Step 6', cx:760, cy:340, w:170, h:70},
+  {id:'knowledge',     type:'agent', stage:'B', step:'Step 5', cx:780, cy:495, w:160, h:70},
+  {id:'persona',       type:'ext',   stage:'B', label:'Persona 池(L5 数据资产)<br><span style="font-size:10px;font-weight:400;">200-500 LLM 合成 + 真实流量校准</span>',
+                       cx:430, cy:495, w:300, h:54},
+
+  // Stage C
+  {id:'creative',      type:'agent', stage:'C', step:'Step 7', cx:380, cy:680, w:170, h:70},
+  {id:'orchestration', type:'agent', stage:'C', step:'Step 7', cx:570, cy:680, w:170, h:70},
+
+  // Stage D
+  {id:'resolver',      type:'agent', stage:'D', step:'Step 8', cx:380, cy:850, w:170, h:70},
+  {id:'compliance',    type:'agent', stage:'D', step:'Step 8', cx:570, cy:850, w:170, h:70},
+
+  // Stage E
+  {id:'sales',         type:'agent', stage:'E', step:'Step 9', cx:380, cy:1000, w:170, h:70},
+  {id:'eventbus',      type:'ext',   stage:'E', label:'Event Bus<br><span style="font-size:10px;font-weight:400;">用户落地页留资 / 行为事件</span>',
+                       cx:680, cy:1000, w:220, h:54},
+
+  // Stage F(右侧侧栏)
+  {id:'reflection',    type:'agent', stage:'F', step:'Step 10', cx:1080, cy:480, w:170, h:80},
+  {id:'kn_sink',       type:'ext',   stage:'F', label:'Knowledge 沉淀<br><span style="font-size:10px;font-weight:400;">模板/Persona/信号权重(Step 11)</span>',
+                       cx:1080, cy:760, w:240, h:60},
+];
+
+// ── Stage 元数据(支持横向 / 纵向)──
+const STAGES = [
+  {id:'A', name:'接入',         step:'Step 1',     mode:'外部触发',    orientation:'h', x0:0, x1:940, y0:0,    y1:225,  modeColor:'#8C8A84',
+    agents:['Planner']},
+  {id:'B', name:'诊断与战略',   step:'Step 2-6',   mode:'并行 + 顺序', orientation:'h', x0:0, x1:940, y0:225,  y1:600,  modeColor:'var(--m-par)',
+    agents:['Diagnosis','Positioning','Audience','Signal','Knowledge']},
+  {id:'C', name:'内容与触达',   step:'Step 7',     mode:'并行协作',   orientation:'h', x0:0, x1:940, y0:600,  y1:790,  modeColor:'var(--m-par)',
+    agents:['Creative','Orchestration']},
+  {id:'D', name:'监督拦截',     step:'Step 8',     mode:'监督协作',   orientation:'h', x0:0, x1:940, y0:790,  y1:920,  modeColor:'var(--m-sup)',
+    agents:['Resolver','Compliance']},
+  {id:'E', name:'销售承接',     step:'Step 9',     mode:'反应协作',   orientation:'h', x0:0, x1:940, y0:920,  y1:1080, modeColor:'var(--m-rea)',
+    agents:['Sales']},
+  {id:'F', name:'学习闭环',     step:'Step 10-11', mode:'反馈学习闭环', orientation:'v', x0:940, x1:1220, y0:0, y1:1080, modeColor:'var(--m-fbk)',
+    agents:['Reflection','Knowledge 沉淀(回到 Knowledge Agent)']},
+];
+const STAGE_ORDER = ['A','B','C','D','E','F'];
+
+// ── 边定义 ──
+const EDGES = [
+  // Stage A → B
+  {from:'client', to:'planner', mode:'data', label:'目标 + 边界'},
+
+  {from:'planner', to:'diagnosis',   mode:'parallel', label:'调度'},
+  {from:'planner', to:'positioning', mode:'parallel'},
+  {from:'planner', to:'audience',    mode:'parallel'},
+  {from:'planner', to:'signal',      mode:'parallel'},
+  {from:'planner', to:'knowledge',   mode:'parallel', label:'同时调度'},
+
+  // Stage B 内部:顺序协作
+  {from:'diagnosis',   to:'positioning', mode:'sequential', label:'S0 阶段诊断'},
+  {from:'positioning', to:'audience',    mode:'sequential', label:'定位 + 表达'},
+
+  // Stage B 数据共享(Persona / Knowledge)
+  {from:'persona', to:'positioning', mode:'data', label:'Persona 预验证'},
+  {from:'persona', to:'audience',    mode:'data', label:'L0 → L1'},
+  {from:'persona', to:'creative',    mode:'data', label:'反应预测'},
+  {from:'knowledge', to:'positioning', mode:'data', label:'行业模板'},
+  {from:'knowledge', to:'audience',    mode:'data'},
+  {from:'knowledge', to:'creative',    mode:'data'},
+  {from:'knowledge', to:'sales',       mode:'data', label:'RAG'},
+
+  // Stage B → C
+  {from:'audience',      to:'creative',      mode:'parallel', label:'D0 准入'},
+  {from:'audience',      to:'orchestration', mode:'parallel', label:'P0 / P1 人群'},
+  {from:'signal',        to:'creative',      mode:'parallel'},
+  {from:'signal',        to:'orchestration', mode:'parallel', label:'demand_state'},
+  {from:'creative',      to:'orchestration', mode:'parallel', label:'素材库'},
+
+  // Stage C → D 监督
+  {from:'orchestration', to:'resolver',   mode:'supervisory', label:'每次触达裁决'},
+  {from:'orchestration', to:'compliance', mode:'supervisory'},
+  {from:'creative',      to:'compliance', mode:'supervisory', label:'素材合规'},
+  {from:'compliance',    to:'resolver',   mode:'supervisory', label:'Policy'},
+
+  // Stage D → E
+  {from:'resolver',      to:'sales',     mode:'supervisory', label:'裁决通过'},
+  {from:'sales',         to:'compliance',mode:'supervisory', label:'对话合规(实时)'},
+
+  {from:'orchestration', to:'eventbus', mode:'reactive', label:'用户留资事件'},
+  {from:'eventbus',      to:'sales',    mode:'reactive', label:'触发承接'},
+  {from:'signal',        to:'sales',    mode:'reactive', label:'B 类极强信号'},
+
+  // Stage F:反馈学习闭环
+  {from:'orchestration', to:'reflection', mode:'feedback', label:'触达 + 实验数据'},
+  {from:'sales',         to:'reflection', mode:'feedback', label:'对话数据'},
+
+  {from:'reflection', to:'kn_sink',      mode:'feedback', label:'模板 / Persona 沉淀'},
+  {from:'reflection', to:'planner',      mode:'feedback', label:'归因报告'},
+  {from:'reflection', to:'positioning',  mode:'feedback', label:'权重更新'},
+  {from:'reflection', to:'audience',     mode:'feedback'},
+  {from:'reflection', to:'creative',     mode:'feedback'},
+  {from:'reflection', to:'orchestration',mode:'feedback'},
+];
+
+// ── 协作模式定义(逐字摘自 V2.0 docx);feedback 仍保留视觉色但不在按钮列表 ──
+const MODES = {
+  all: {
+    name:'全部协作模式',
+    quote:'12 个 Agent 不是树状层级,而是网状协作。Planner 处于中心调度位,但其他 Agent 可以直接通过 Event Bus 互相通信。Resolver 和 Compliance 是横切的——任何执行类 Agent 的输出都必须先经过它们才能落地。',
+    eg:'4 种协作模式 + 反馈学习闭环 同时存在于一个 SaaS 客户的冷启动链路中',
+    source:'V2.0 第三章 3.2 Agent 协作拓扑'
+  },
+  sequential:  {name:'顺序协作', quote:'上游 Agent 输出作为下游输入;强依赖', eg:'Diagnosis → Positioning → Audience',                          source:'V2.0 第三章 3.3 节(原文「四种典型模式」之一)'},
+  parallel:    {name:'并行协作', quote:'多 Agent 同时工作互不依赖;最后由 Planner 合并', eg:'Signal 监听 + Creative 生成 + Audience 验证可同时进行', source:'V2.0 第三章 3.3 节(原文「四种典型模式」之一)'},
+  reactive:    {name:'反应协作', quote:'Agent A 的输出通过 Event Bus 触发 Agent B', eg:'用户在落地页留资 → 触发 Sales Agent 介入',               source:'V2.0 第三章 3.3 节(原文「四种典型模式」之一)'},
+  supervisory: {name:'监督协作', quote:'横切 Agent 对其他 Agent 的输出做拦截或审查', eg:'Resolver 和 Compliance 拦截每次触达',                source:'V2.0 第三章 3.3 节(原文「四种典型模式」之一)'},
+};
+
+// 模式 → 边色 + marker
+const MODE_VIS = {
+  sequential:  {stroke:'#1860A8', marker:'arr-seq',  dashed:false},
+  parallel:    {stroke:'#4A42B0', marker:'arr-par',  dashed:false},
+  reactive:    {stroke:'#B87210', marker:'arr-rea',  dashed:false},
+  supervisory: {stroke:'#A83820', marker:'arr-sup',  dashed:true},
+  feedback:    {stroke:'#1D9E75', marker:'arr-fbk',  dashed:false},
+  data:        {stroke:'#8C8A84', marker:'arr-data', dashed:true},
+};
+
+/* ════════════════════════ 全局状态 ════════════════════════ */
+let activeStage = 'all';
+let activeMode  = 'all';
+
+/* ════════════════════════ DOM 渲染 ════════════════════════ */
+const canvas = document.getElementById('canvas');
+const svg    = document.getElementById('canvasSvg');
+
+// Stage bands + tags
+STAGES.forEach((s, i) => {
+  const band = document.createElement('div');
+  band.className = 'stage-band' + (i % 2 ? ' alt' : '') + (s.orientation === 'v' ? ' stage-band-vertical' : '');
+  band.style.cssText = `left:${s.x0}px;top:${s.y0}px;width:${s.x1 - s.x0}px;height:${s.y1 - s.y0}px;`;
+  canvas.appendChild(band);
+
+  const tag = document.createElement('div');
+  tag.className = 'stage-tag' + (s.orientation === 'v' ? ' vertical' : '');
+  if(s.orientation === 'v'){
+    tag.style.cssText = `top:14px;left:${s.x0 + 12}px;`;
+  } else {
+    tag.style.cssText = `top:${s.y0 + 14}px;left:10px;`;
+  }
+  tag.innerHTML = `
+    <div class="stage-id">阶段 ${s.id}</div>
+    <div class="stage-name">${s.name}</div>
+    <div class="stage-step">${s.step}</div>
+    <div class="stage-mode" style="color:${s.modeColor};">主导:${s.mode}</div>
+  `;
+  canvas.appendChild(tag);
+});
+
+// Render nodes
+NODES.forEach(n => {
+  const left = n.cx - n.w / 2;
+  const top  = n.cy - n.h / 2;
+  if(n.type === 'ext'){
+    const el = document.createElement('div');
+    el.className = 'ext-node';
+    el.id = `n-${n.id}`;
+    el.dataset.stage = n.stage;
+    el.style.cssText = `left:${left}px;top:${top}px;width:${n.w}px;`;
+    el.innerHTML = n.label;
+    canvas.appendChild(el);
+  } else {
+    const a = AGENTS[n.id];
+    if(!a){ console.warn('No AGENT for', n.id); return; }
+    const el = document.createElement('div');
+    el.className = `agent c-${a.color}`;
+    el.id = `n-${n.id}`;
+    el.dataset.agent = n.id;
+    el.dataset.stage = n.stage;
+    el.style.cssText = `left:${left}px;top:${top}px;width:${n.w}px;`;
+    el.innerHTML = `
+      <div class="a-id-row">
+        <span class="a-icon" title="虚拟员工 / AI Agent">${ROBOT_ICON}</span>
+        <span class="a-id">${a.id}</span>
+        <span class="a-step">${n.step || ''}</span>
+      </div>
+      <div class="a-name">${a.name}</div>
+      <div class="a-sub">${a.sub}</div>
+    `;
+    el.addEventListener('click', e => { e.stopPropagation(); showAgent(n.id); });
+    canvas.appendChild(el);
+  }
+});
+
+// node id → stage 索引
+const NODE_STAGE = {};
+NODES.forEach(n => { NODE_STAGE[n.id] = n.stage; });
+
+function edgeStage(edge){
+  const a = STAGE_ORDER.indexOf(NODE_STAGE[edge.from] || 'A');
+  const b = STAGE_ORDER.indexOf(NODE_STAGE[edge.to]   || 'A');
+  return STAGE_ORDER[Math.max(a, b)];
+}
+
+// ── Edge rendering ──
+let allPaths = [];
+
+function getNodeBox(id){
+  const el = document.getElementById(`n-${id}`);
+  if(!el) return null;
+  const r = el.getBoundingClientRect();
+  const cr = canvas.getBoundingClientRect();
+  return {
+    left:   r.left   - cr.left,
+    top:    r.top    - cr.top,
+    right:  r.right  - cr.left,
+    bottom: r.bottom - cr.top,
+    cx: r.left + r.width/2  - cr.left,
+    cy: r.top  + r.height/2 - cr.top,
+    w: r.width, h: r.height
+  };
+}
+
+function pickAnchors(fromBox, toBox){
+  const dx = toBox.cx - fromBox.cx;
+  const dy = toBox.cy - fromBox.cy;
+  let f, t;
+  if(Math.abs(dy) > Math.abs(dx) * 0.7){
+    if(dy > 0){
+      f = {x:fromBox.cx, y:fromBox.bottom};
+      t = {x:toBox.cx,   y:toBox.top};
+    } else {
+      f = {x:fromBox.cx, y:fromBox.top};
+      t = {x:toBox.cx,   y:toBox.bottom};
+    }
+  } else {
+    if(dx > 0){
+      f = {x:fromBox.right, y:fromBox.cy};
+      t = {x:toBox.left,    y:toBox.cy};
+    } else {
+      f = {x:fromBox.left,  y:fromBox.cy};
+      t = {x:toBox.right,   y:toBox.cy};
+    }
+  }
+  return {f, t, dx, dy};
+}
+
+function drawEdge(edge){
+  const fb = getNodeBox(edge.from);
+  const tb = getNodeBox(edge.to);
+  if(!fb || !tb) return null;
+  const {f, t, dx, dy} = pickAnchors(fb, tb);
+  // Bezier with mid offset
+  let offset = Math.min(80, Math.max(20, (Math.abs(dy) + Math.abs(dx))/4));
+  // 反馈边从右侧 reflection 弯回左侧上游 → 用更大 offset 让曲线绕开
+  if(edge.mode === 'feedback' && edge.from === 'reflection' && edge.to !== 'kn_sink'){
+    offset = 180;
+  }
+  let c1x, c1y, c2x, c2y;
+  if(Math.abs(dy) > Math.abs(dx) * 0.7){
+    c1x = f.x;                                c1y = f.y + (dy > 0 ? offset : -offset);
+    c2x = t.x;                                c2y = t.y - (dy > 0 ? offset : -offset);
+  } else {
+    c1x = f.x + (dx > 0 ? offset : -offset);  c1y = f.y;
+    c2x = t.x - (dx > 0 ? offset : -offset);  c2y = t.y;
+  }
+  const d = `M${f.x},${f.y} C${c1x},${c1y} ${c2x},${c2y} ${t.x},${t.y}`;
+  const vis = MODE_VIS[edge.mode] || MODE_VIS.data;
+  const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+  path.setAttribute('d', d);
+  path.setAttribute('stroke', vis.stroke);
+  if(vis.dashed) path.setAttribute('stroke-dasharray', '6 4');
+  path.setAttribute('marker-end', `url(#${vis.marker})`);
+  path.dataset.from = edge.from;
+  path.dataset.to   = edge.to;
+  path.dataset.mode = edge.mode;
+  path.dataset.stage = edgeStage(edge);
+  svg.appendChild(path);
+
+  let labelEl = null, bgEl = null;
+  if(edge.label){
+    const midX = (f.x + t.x) / 2;
+    const midY = (f.y + t.y) / 2 - 4;
+    const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+    txt.setAttribute('x', midX);
+    txt.setAttribute('y', midY);
+    txt.setAttribute('text-anchor','middle');
+    txt.setAttribute('class','edge-label');
+    txt.setAttribute('fill', vis.stroke);
+    txt.textContent = edge.label;
+    txt.dataset.mode = edge.mode;
+    const bbox_w = edge.label.length * 12 + 8;
+    const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    rect.setAttribute('x', midX - bbox_w/2);
+    rect.setAttribute('y', midY - 11);
+    rect.setAttribute('width', bbox_w);
+    rect.setAttribute('height', 13);
+    rect.setAttribute('rx', 2);
+    rect.setAttribute('fill', '#FFFFFF');
+    rect.setAttribute('opacity', '.92');
+    rect.dataset.mode = edge.mode;
+    svg.appendChild(rect);
+    svg.appendChild(txt);
+    labelEl = txt; bgEl = rect;
+  }
+  return {path, label:labelEl, bg:bgEl, mode:edge.mode, stage:edgeStage(edge)};
+}
+
+function renderAllEdges(){
+  const toRemove = [];
+  svg.childNodes.forEach(n => { if(n.tagName !== 'defs') toRemove.push(n); });
+  toRemove.forEach(n => svg.removeChild(n));
+  allPaths = [];
+  EDGES.forEach(e => {
+    const r = drawEdge(e);
+    if(r) allPaths.push(r);
+  });
+}
+
+/* ════════════════════════ 状态应用 ════════════════════════ */
+function nodeStageState(nodeStage){
+  if(activeStage === 'all') return 'normal';
+  const a = STAGE_ORDER.indexOf(activeStage);
+  const b = STAGE_ORDER.indexOf(nodeStage);
+  if(b < a)  return 'done';
+  if(b === a) return 'active';
+  return 'pending';
+}
+
+function applyAll(){
+  // 1) Stage tabs active state
+  document.querySelectorAll('.stage-btn').forEach(b => b.classList.toggle('active', b.dataset.stage === activeStage));
+  document.querySelectorAll('.lg-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === activeMode));
+
+  // 2) Mode info panel
+  const m = MODES[activeMode];
+  const info = document.getElementById('modeInfo');
+  if(m){
+    info.innerHTML = `
+      <div class="mode-info-title">${m.name} <span style="font-size:10px;color:var(--muted);font-weight:400;">· ${m.source}</span></div>
+      <div class="mode-info-quote">${m.quote}</div>
+      <div class="mode-info-eg">${m.eg}</div>
+    `;
+  }
+
+  // 3) 节点完成度状态
+  document.querySelectorAll('.agent, .ext-node').forEach(el => {
+    el.classList.remove('stage-done','stage-active','stage-pending');
+    const ns = el.dataset.stage;
+    const state = nodeStageState(ns);
+    if(state === 'done')    el.classList.add('stage-done');
+    if(state === 'active')  el.classList.add('stage-active');
+    if(state === 'pending') el.classList.add('stage-pending');
+  });
+
+  // 4) 边的状态(stage 完成度 × mode 筛选叠加)
+  allPaths.forEach(({path, label, bg, mode, stage}) => {
+    path.classList.remove('dimmed','flowing','highlighted','stage-pending','stage-done-edge');
+    if(label) label.style.opacity = '1';
+    if(bg)    bg.style.opacity    = '.92';
+
+    const sIdx = STAGE_ORDER.indexOf(stage);
+    const aIdx = STAGE_ORDER.indexOf(activeStage);
+    const stagePending = activeStage !== 'all' && sIdx > aIdx;
+    const stageActive  = activeStage !== 'all' && sIdx === aIdx;
+    const stageDone    = activeStage !== 'all' && sIdx < aIdx;
+
+    const modeMatch = (activeMode === 'all') || (mode === activeMode);
+
+    if(stagePending){
+      path.classList.add('stage-pending');
+      if(label) label.style.opacity = '0';
+      if(bg)    bg.style.opacity    = '0';
+      return;
+    }
+
+    if(!modeMatch){
+      path.classList.add('dimmed');
+      if(label) label.style.opacity = '0';
+      if(bg)    bg.style.opacity    = '0';
+      return;
+    }
+
+    if(stageActive){
+      // 进行中边:粗 + 流动 + 高亮
+      path.classList.add('flowing');
+      path.classList.add('highlighted');
+    } else if(stageDone){
+      // 已完成边:弱化(opacity 0.30 + 标签淡化)
+      path.classList.add('stage-done-edge');
+      if(label) label.style.opacity = '0.45';
+      if(bg)    bg.style.opacity    = '0.55';
+    } else if(activeMode !== 'all'){
+      // 'all' stage + 单 mode:加 flowing 强调当前模式
+      path.classList.add('flowing');
+    }
+  });
+}
+
+/* ════════════════════════ 顶部阶段按钮 ════════════════════════ */
+const modeTooltip = document.getElementById('modeTooltip');
+function positionTooltip(btn){
+  modeTooltip.style.left = '0px';
+  modeTooltip.style.top  = '0px';
+  const tw = modeTooltip.offsetWidth;
+  const th = modeTooltip.offsetHeight;
+  const r  = btn.getBoundingClientRect();
+  let left = r.left + window.scrollX;
+  const maxLeft = window.scrollX + document.documentElement.clientWidth - tw - 12;
+  if(left > maxLeft) left = maxLeft;
+  if(left < window.scrollX + 8) left = window.scrollX + 8;
+  let top = r.bottom + window.scrollY + 8;
+  if(top + th > window.scrollY + window.innerHeight - 8){
+    top = r.top + window.scrollY - th - 8;
+  }
+  modeTooltip.style.left = left + 'px';
+  modeTooltip.style.top  = top  + 'px';
+}
+
+document.querySelectorAll('.stage-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    activeStage = btn.dataset.stage;
+    applyAll();
+  });
+  btn.addEventListener('mouseenter', () => {
+    const sid = btn.dataset.stage;
+    if(sid === 'all'){
+      modeTooltip.innerHTML = `
+        <div class="mode-tooltip-source">阶段进度切换 · 默认</div>
+        <div class="mode-tooltip-name">全部阶段</div>
+        <div class="mode-tooltip-quote">流程图全亮,无完成度修饰。点击具体阶段进入"流程进度模拟"。</div>
+        <div class="mode-tooltip-eg">A → B → C → D → E,F 是绕回上游的反馈闭环侧栏</div>
+      `;
+    } else {
+      const stg = STAGES.find(s => s.id === sid);
+      if(!stg) return;
+      modeTooltip.innerHTML = `
+        <div class="mode-tooltip-source">阶段 ${stg.id} · ${stg.step}</div>
+        <div class="mode-tooltip-name">${stg.name}</div>
+        <div class="mode-tooltip-quote">主导协作模式: <strong style="color:${stg.modeColor};">${stg.mode}</strong></div>
+        <div class="mode-tooltip-meta"><strong>涉及 Agent:</strong> ${stg.agents.join(' / ')}</div>
+        <div class="mode-tooltip-eg">点击后:之前阶段标 ✓,本阶段流动高亮,之后阶段灰化标 ⋯</div>
+      `;
+    }
+    modeTooltip.classList.add('show');
+    positionTooltip(btn);
+  });
+  btn.addEventListener('mouseleave', () => modeTooltip.classList.remove('show'));
+});
+
+/* ════════════════════════ 左下角协作模式按钮 ════════════════════════ */
+document.querySelectorAll('.lg-mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    activeMode = btn.dataset.mode;
+    applyAll();
+  });
+  btn.addEventListener('mouseenter', () => {
+    const m = MODES[btn.dataset.mode];
+    if(!m) return;
+    modeTooltip.innerHTML = `
+      <div class="mode-tooltip-source">${m.source}</div>
+      <div class="mode-tooltip-name">${m.name}</div>
+      <div class="mode-tooltip-quote">${m.quote}</div>
+      <div class="mode-tooltip-eg">${m.eg}</div>
+    `;
+    modeTooltip.classList.add('show');
+    positionTooltip(btn);
+  });
+  btn.addEventListener('mouseleave', () => modeTooltip.classList.remove('show'));
+});
+
+/* ════════════════════════ Agent 详情卡 ════════════════════════ */
+const contractEl = document.getElementById('contractPanel');
+const cpId = document.getElementById('cpId');
+const cpName = document.getElementById('cpName');
+const cpSub = document.getElementById('cpSub');
+const cpCoop = document.getElementById('cpCoop');
+const cpTask = document.getElementById('cpTask');
+const cpCritic = document.getElementById('cpCritic');
+const cpEsc = document.getElementById('cpEsc');
+const cpKpi = document.getElementById('cpKpi');
+const cpClose = document.getElementById('cpClose');
+
+function showAgent(id){
+  const a = AGENTS[id];
+  if(!a) return;
+  cpId.textContent = a.id + ' · ' + a.layer;
+  cpName.textContent = a.name + ' Agent';
+  cpSub.textContent = a.sub;
+  const coopFrom = EDGES.filter(e => e.from === id).map(e => e.to);
+  const coopTo   = EDGES.filter(e => e.to === id).map(e => e.from);
+  const coops = [...new Set([...coopFrom, ...coopTo])].filter(c => AGENTS[c]).map(c => AGENTS[c].name);
+  cpCoop.textContent = coops.length ? `直接协作: ${coops.join(' / ')}` : '';
+  cpTask.textContent = a.task;
+  cpCritic.innerHTML = '';
+  cpEsc.innerHTML = '';
+  cpKpi.innerHTML = '';
+  a.critic.forEach(c=>{ const li=document.createElement('li'); li.textContent=c; cpCritic.appendChild(li); });
+  a.escalations.forEach(e=>{ const li=document.createElement('li'); li.textContent=e; cpEsc.appendChild(li); });
+  a.kpis.forEach(k=>{ const li=document.createElement('li'); li.textContent=k; cpKpi.appendChild(li); });
+  contractEl.classList.add('show');
+
+  document.querySelectorAll('.agent').forEach(el => el.classList.add('dimmed'));
+  document.getElementById(`n-${id}`).classList.remove('dimmed');
+  document.getElementById(`n-${id}`).classList.add('highlighted');
+  coops.forEach(name => {
+    const partner = Object.entries(AGENTS).find(([k,v]) => v.name === name)?.[0];
+    if(partner){
+      const el = document.getElementById(`n-${partner}`);
+      if(el) el.classList.remove('dimmed');
+    }
+  });
+}
+
+function hideContract(){
+  contractEl.classList.remove('show');
+  document.querySelectorAll('.agent').forEach(el => {
+    el.classList.remove('dimmed');
+    el.classList.remove('highlighted');
+  });
+}
+cpClose.onclick = hideContract;
+document.addEventListener('keydown', e => { if(e.key === 'Escape') hideContract(); });
+
+/* ════════════════════════ Init ════════════════════════ */
+function init(){
+  renderAllEdges();
+  applyAll();
+}
+window.addEventListener('load', () => setTimeout(init, 50));
+window.addEventListener('resize', () => {
+  setTimeout(() => {
+    renderAllEdges();
+    applyAll();
+  }, 100);
+});
+</script>
+</body>
+</html>

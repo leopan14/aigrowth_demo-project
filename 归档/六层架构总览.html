@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>AI 原生精准增长系统 V2.0 · 六层架构总览</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#F2F1ED;
+  --surface:#FFFFFF;
+  --border:#DDDBD3;
+  --text:#1A1A18;
+  --muted:#8C8A84;
+  --teal:#1D9E75;   --teal-bg:#E1F5EE;   --teal-dk:#064E38;
+  --blue:#1860A8;   --blue-bg:#E4F0FB;   --blue-dk:#0B3D6E;
+  --amber:#B87210;  --amber-bg:#FEF0D8;  --amber-dk:#5C3800;
+  --coral:#A83820;  --coral-bg:#FAE9E5;  --coral-dk:#4A1B0C;
+  --purple:#4A42B0; --purple-bg:#ECEAFE; --purple-dk:#221D5C;
+}
+html,body{background:var(--bg);font-family:'Noto Sans SC','PingFang SC',sans-serif;color:var(--text);}
+
+/* ══ HEADER ══ */
+.hdr{
+  position:sticky;top:0;z-index:300;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:14px;
+  padding:0 24px;height:54px;
+}
+.hdr-title h1{font-size:14px;font-weight:700;}
+.hdr-title p {font-size:9.5px;color:var(--muted);margin-top:2px;}
+.hdr-spacer{flex:1;}
+.hdr-link{
+  font-size:11px;color:var(--purple);
+  padding:5px 12px;border:1.3px solid var(--purple-bg);
+  border-radius:14px;text-decoration:none;
+  background:var(--purple-bg);
+}
+.hdr-link:hover{background:var(--purple);color:#fff;}
+
+.tog-wrap{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--muted);cursor:pointer;}
+.tog{width:30px;height:16px;border-radius:8px;background:var(--border);position:relative;transition:background .2s;cursor:pointer;}
+.tog.on{background:var(--purple);}
+.tog::after{content:'';position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:transform .18s;}
+.tog.on::after{transform:translateX(14px);}
+
+/* ══ MAIN ══ */
+.main{
+  max-width:1400px;
+  margin:18px auto 80px;
+  padding:0 24px;
+  display:grid;
+  grid-template-columns:1fr 280px;
+  gap:14px;
+  align-items:start;
+}
+
+/* Layered stack (left) */
+.layers-stack{
+  display:flex;flex-direction:column;gap:0;
+}
+.layer{
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  padding:14px 22px 16px;
+  position:relative;
+  transition:all .2s;
+}
+.layer.l-teal{border-left:6px solid var(--teal);}
+.layer.l-blue{border-left:6px solid var(--blue);}
+.layer.l-amber{border-left:6px solid var(--amber);}
+.layer.l-purple{border-left:6px solid var(--purple);}
+
+.layer-head{
+  display:flex;align-items:baseline;gap:14px;
+  margin-bottom:8px;flex-wrap:wrap;
+  cursor:pointer;user-select:none;
+}
+.layer-head:hover .collapse-icon{color:var(--purple);}
+.collapse-icon{
+  font-size:11px;color:var(--muted);
+  transition:transform .25s ease;
+  margin-left:6px;display:inline-block;
+}
+.layer:not(.collapsed) .collapse-icon{transform:rotate(90deg);}
+.layer.collapsed .layer-body{display:none;}
+.layer.collapsed .layer-role{margin-bottom:0;}
+.layer.collapsed{padding-bottom:14px;}
+
+/* Expand-all toggle in header */
+.expand-all-btn{
+  font-size:11px;color:var(--purple);
+  padding:5px 11px;border:1.3px solid var(--purple-bg);
+  border-radius:14px;background:var(--purple-bg);
+  cursor:pointer;user-select:none;
+  margin-right:6px;
+}
+.expand-all-btn:hover{background:var(--purple);color:#fff;}
+.layer-tag{
+  font-size:13px;font-weight:700;
+  padding:4px 12px;border-radius:14px;
+  letter-spacing:1px;
+}
+.layer-tag.t-teal{background:var(--teal-bg);color:var(--teal-dk);}
+.layer-tag.t-blue{background:var(--blue-bg);color:var(--blue-dk);}
+.layer-tag.t-amber{background:var(--amber-bg);color:var(--amber-dk);}
+.layer-tag.t-purple{background:var(--purple-bg);color:var(--purple-dk);}
+.layer-name{font-size:18px;font-weight:700;}
+.layer-tagline{
+  font-size:11px;color:var(--muted);
+  font-style:italic;
+}
+.layer-meta{
+  font-size:10px;color:var(--muted);
+  margin-left:auto;
+  background:var(--bg);padding:2px 9px;border-radius:10px;
+}
+
+.layer-role{
+  font-size:12px;color:var(--text);
+  line-height:1.65;margin-bottom:14px;
+  max-width:1000px;
+}
+.layer-role strong{color:var(--purple-dk);font-weight:600;}
+
+/* Layer body */
+.layer-body{display:flex;flex-direction:column;gap:10px;}
+
+/* Components (L1, L2, L4, L5) */
+.components{
+  display:flex;flex-wrap:wrap;gap:10px;
+}
+.component{
+  padding:10px 13px 11px;
+  border:1.3px solid;
+  border-radius:6px;
+  background:var(--surface);
+  cursor:pointer;
+  transition:all .15s;
+  min-width:160px;
+  max-width:300px;
+  position:relative;
+}
+.component .c-name{font-size:12px;font-weight:600;line-height:1.3;margin-bottom:3px;}
+.component .c-desc{font-size:10.5px;color:var(--muted);line-height:1.5;}
+.component.c-teal{border-color:var(--teal);background:var(--teal-bg);color:var(--teal-dk);}
+.component.c-teal .c-desc{color:#3a6e54;}
+.component.c-blue{border-color:var(--blue);background:var(--blue-bg);color:var(--blue-dk);}
+.component.c-blue .c-desc{color:#3d6492;}
+.component.c-amber{border-color:var(--amber);background:var(--amber-bg);color:var(--amber-dk);}
+.component.c-amber .c-desc{color:#7d5520;}
+.component.c-coral{border-color:var(--coral);background:var(--coral-bg);color:var(--coral-dk);}
+.component.c-coral .c-desc{color:#7a3520;}
+.component.c-purple{border-color:var(--purple);background:var(--purple-bg);color:var(--purple-dk);}
+.component.c-purple .c-desc{color:#46408b;}
+.component:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 14px rgba(74,66,176,.18);
+}
+.component .new-tag{
+  position:absolute;top:-7px;right:-7px;
+  font-size:8px;font-weight:700;
+  padding:2px 6px;border-radius:9px;
+  background:var(--coral);color:#fff;
+  letter-spacing:.5px;
+}
+.component .v1-tag{
+  margin-top:5px;font-size:9px;
+  padding:1px 6px;
+  background:#F0E6E0;color:#6B4530;
+  border-radius:3px;display:inline-block;
+}
+
+/* L3 Agent grid (12 Agent compact) */
+.agent-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+  gap:10px;
+}
+.agent-mini{
+  padding:9px 12px;
+  border:1.5px solid;
+  border-radius:6px;
+  background:var(--surface);
+  cursor:pointer;
+  transition:all .15s;
+  position:relative;
+}
+.agent-mini:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,.10);}
+.agent-mini.c-teal{border-color:var(--teal);background:var(--teal-bg);}
+.agent-mini.c-amber{border-color:var(--amber);background:var(--amber-bg);}
+.agent-mini.c-blue{border-color:var(--blue);background:var(--blue-bg);}
+.agent-mini.c-purple{border-color:var(--purple);background:var(--purple-bg);}
+.agent-mini.c-coral{border-color:var(--coral);background:var(--coral-bg);}
+.agent-mini .am-id{
+  position:absolute;top:5px;right:7px;
+  font-size:8.5px;font-weight:800;color:var(--muted);
+}
+.agent-mini .am-cat{
+  font-size:9px;font-weight:600;
+  color:var(--muted);text-transform:uppercase;
+  letter-spacing:.06em;margin-bottom:2px;
+}
+.agent-mini .am-name{font-size:13px;font-weight:700;line-height:1.2;}
+.agent-mini.c-teal .am-name{color:var(--teal-dk);}
+.agent-mini.c-amber .am-name{color:var(--amber-dk);}
+.agent-mini.c-blue .am-name{color:var(--blue-dk);}
+.agent-mini.c-purple .am-name{color:var(--purple-dk);}
+.agent-mini.c-coral .am-name{color:var(--coral-dk);}
+.agent-mini .am-sub{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.3;}
+.agent-mini .v1-tag{
+  margin-top:5px;font-size:9px;
+  padding:1px 6px;
+  background:#F0E6E0;color:#6B4530;
+  border-radius:3px;display:inline-block;
+}
+
+/* L3 group rows */
+.l3-group{
+  border-top:1px dashed var(--border);
+  padding-top:9px;
+}
+.l3-group:first-child{border-top:none;padding-top:0;}
+.l3-group-head{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:6px;
+}
+.l3-group-tag{
+  font-size:10.5px;font-weight:700;
+  padding:3px 10px;border-radius:11px;
+}
+.l3-group-tag.g-teal{background:var(--teal-bg);color:var(--teal-dk);border:1px solid var(--teal);}
+.l3-group-tag.g-amber{background:var(--amber-bg);color:var(--amber-dk);border:1px solid var(--amber);}
+.l3-group-tag.g-blue{background:var(--blue-bg);color:var(--blue-dk);border:1px solid var(--blue);}
+.l3-group-tag.g-purple{background:var(--purple-bg);color:var(--purple-dk);border:1px solid var(--purple);}
+.l3-group-tag.g-coral{background:var(--coral-bg);color:var(--coral-dk);border:1px solid var(--coral);}
+.l3-group-meta{font-size:10px;color:var(--muted);}
+
+/* Layer arrows */
+.l-arrow{
+  text-align:center;
+  height:30px;line-height:30px;
+  font-size:13px;color:var(--muted);
+  position:relative;z-index:2;
+}
+.l-arrow .lab{
+  font-size:10px;color:var(--muted);
+  background:var(--bg);padding:3px 12px;border-radius:11px;
+  margin:0 6px;font-style:italic;
+  border:1px solid var(--border);
+}
+
+/* ══ L6 Sidebar (横切监督) ══ */
+.l6-sidebar{
+  background:var(--coral-bg);
+  border:2px solid var(--coral);
+  border-radius:12px;
+  padding:14px 16px 16px;
+  position:sticky;top:70px;
+  max-height:calc(100vh - 100px);
+  overflow-y:auto;
+}
+.l6-head{
+  display:flex;align-items:baseline;gap:8px;
+  margin-bottom:6px;flex-wrap:wrap;
+}
+.l6-tag{
+  font-size:13px;font-weight:700;
+  padding:3px 11px;border-radius:13px;letter-spacing:1px;
+  background:var(--coral);color:#fff;
+}
+.l6-name{font-size:16px;font-weight:700;color:var(--coral-dk);}
+.l6-tagline{font-size:10.5px;color:var(--coral-dk);font-style:italic;}
+.l6-role{
+  font-size:11px;color:var(--coral-dk);
+  line-height:1.6;margin-bottom:10px;
+  padding-bottom:10px;
+  border-bottom:1.5px dashed var(--coral);
+}
+.l6-role strong{font-weight:700;}
+.l6-cross-badge{
+  display:inline-block;
+  background:var(--coral);color:#fff;
+  font-size:9px;font-weight:700;
+  padding:3px 8px;border-radius:9px;
+  margin-bottom:8px;letter-spacing:.5px;
+}
+.l6-component{
+  background:var(--surface);
+  border:1.3px solid var(--coral);
+  border-radius:6px;
+  padding:9px 12px 10px;
+  margin-bottom:8px;
+  cursor:pointer;transition:all .15s;
+}
+.l6-component:hover{transform:translateX(-2px);box-shadow:0 4px 10px rgba(168,56,32,.15);}
+.l6-component .c-name{font-size:11.5px;font-weight:700;color:var(--coral-dk);margin-bottom:3px;}
+.l6-component .c-desc{font-size:10px;color:#7a3520;line-height:1.5;}
+.l6-monitors{
+  margin-top:10px;padding-top:10px;
+  border-top:1.5px dashed var(--coral);
+  font-size:10px;color:var(--coral-dk);
+}
+.l6-monitors-title{font-weight:700;margin-bottom:6px;}
+.l6-monitors-list{display:flex;flex-wrap:wrap;gap:4px;}
+.l6-monitor-chip{
+  font-size:9.5px;padding:2px 7px;
+  background:var(--surface);border:1px solid var(--coral);
+  border-radius:8px;color:var(--coral-dk);
+}
+
+/* ══ OVERVIEW BANNER (V2.0 定位 + 3 设计原则) ══ */
+.overview-banner{
+  max-width:1400px;
+  margin:14px auto 0;
+  padding:0 24px;
+}
+.ov-card{
+  background:var(--surface);
+  border:1.5px solid var(--purple);
+  border-radius:10px;
+  padding:14px 18px 15px;
+}
+.ov-pitch{
+  display:flex;align-items:flex-start;gap:12px;
+  padding-bottom:11px;margin-bottom:11px;
+  border-bottom:1.5px dashed var(--purple-bg);
+}
+.ov-pitch-tag{
+  font-size:11px;font-weight:700;color:#fff;
+  background:var(--purple);
+  padding:4px 11px;border-radius:13px;
+  flex-shrink:0;letter-spacing:0.5px;
+}
+.ov-pitch-text{
+  font-size:12.5px;line-height:1.65;color:var(--text);
+  flex:1;
+}
+.ov-pitch-text strong{color:var(--purple-dk);}
+.ov-principles{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+}
+.ov-pr{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:8px 11px;
+  background:var(--purple-bg);
+  border-radius:7px;
+}
+.ov-pr-num{
+  font-size:20px;font-weight:800;
+  color:var(--purple);
+  line-height:1;flex-shrink:0;
+  margin-top:-1px;
+}
+.ov-pr-name{
+  font-size:12px;font-weight:700;
+  color:var(--purple-dk);margin-bottom:2px;
+}
+.ov-pr-desc{
+  font-size:10.5px;color:#46408b;
+  line-height:1.55;
+}
+
+/* ══ INFO PANEL (top sticky) ══ */
+.info{
+  position:sticky;top:54px;z-index:290;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:10px 24px;font-size:12px;color:var(--text);line-height:1.55;
+  display:flex;align-items:center;gap:14px;
+}
+.info-title{font-size:13px;font-weight:700;color:var(--purple-dk);}
+.info-text{flex:1;color:var(--muted);}
+.info-shortcut{font-size:10px;color:var(--muted);background:var(--bg);padding:3px 8px;border-radius:4px;}
+
+/* ══ Detail panel (popup) ══ */
+.detail-panel{
+  position:fixed;
+  bottom:18px;left:50%;
+  transform:translateX(-50%);
+  background:var(--surface);
+  border:1.5px solid var(--purple);
+  border-radius:10px;
+  padding:14px 20px 16px;
+  width:min(720px, calc(100vw - 40px));
+  box-shadow:0 12px 40px rgba(0,0,0,.20);
+  display:none;z-index:500;
+}
+.detail-panel.show{display:block;}
+.dp-head{
+  display:flex;align-items:baseline;gap:12px;
+  margin-bottom:8px;padding-bottom:8px;
+  border-bottom:1.5px solid var(--purple-bg);flex-wrap:wrap;
+}
+.dp-layer{font-size:10px;font-weight:700;color:var(--purple);
+  background:var(--purple-bg);padding:2px 9px;border-radius:11px;}
+.dp-name{font-size:15px;font-weight:700;}
+.dp-desc{font-size:12px;color:var(--text);line-height:1.6;margin-bottom:8px;}
+.dp-v1{
+  font-size:10.5px;color:#6B4530;
+  background:#F0E6E0;padding:6px 10px;
+  border-radius:5px;border-left:3px solid #B87210;
+}
+.dp-close{
+  position:absolute;top:10px;right:14px;
+  font-size:16px;color:var(--muted);
+  cursor:pointer;border:none;background:none;
+  padding:2px 7px;border-radius:4px;
+}
+.dp-close:hover{background:var(--bg);}
+
+/* ══ L2 modes ══ */
+.modes-row{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+  margin-top:8px;padding-top:10px;border-top:1px dashed var(--border);
+}
+.mode-card{
+  border:1.3px solid;border-radius:6px;padding:8px 11px;
+  background:var(--surface);font-size:10.5px;line-height:1.5;
+}
+.mode-card.m-teal{border-color:var(--teal);background:var(--teal-bg);}
+.mode-card.m-blue{border-color:var(--blue);background:var(--blue-bg);}
+.mode-card.m-coral{border-color:var(--coral);background:var(--coral-bg);}
+.mode-card .mc-name{font-size:12px;font-weight:700;margin-bottom:3px;}
+.mode-card.m-teal .mc-name{color:var(--teal-dk);}
+.mode-card.m-blue .mc-name{color:var(--blue-dk);}
+.mode-card.m-coral .mc-name{color:var(--coral-dk);}
+.mode-card .mc-row{display:flex;gap:6px;margin-top:2px;}
+.mode-card .mc-key{font-weight:600;color:var(--muted);min-width:36px;flex-shrink:0;}
+.mode-card .mc-val{color:var(--text);}
+
+/* ══ L3 three closed loops ══ */
+.loops-row{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+  margin-top:12px;padding-top:11px;
+  border-top:1.5px dashed var(--border);
+}
+.loops-title{
+  grid-column:1 / -1;
+  font-size:11.5px;font-weight:700;color:var(--purple-dk);
+  margin-bottom:2px;
+}
+.loops-title .lt-sub{
+  font-size:10px;font-weight:400;color:var(--muted);
+  margin-left:6px;
+}
+.loop-card{
+  border:1.3px solid;border-radius:6px;padding:9px 11px 10px;
+  background:var(--surface);position:relative;
+}
+.loop-card.lc-1{border-color:var(--purple);background:var(--purple-bg);}
+.loop-card.lc-2{border-color:var(--blue);background:var(--blue-bg);}
+.loop-card.lc-3{border-color:var(--amber);background:var(--amber-bg);}
+.loop-card .loop-num{
+  position:absolute;top:-8px;left:9px;
+  font-size:10px;font-weight:800;
+  padding:2px 8px;border-radius:9px;
+  background:#fff;letter-spacing:.3px;
+}
+.loop-card.lc-1 .loop-num{color:var(--purple-dk);border:1.3px solid var(--purple);}
+.loop-card.lc-2 .loop-num{color:var(--blue-dk);border:1.3px solid var(--blue);}
+.loop-card.lc-3 .loop-num{color:var(--amber-dk);border:1.3px solid var(--amber);}
+.loop-card .loop-name{
+  font-size:12px;font-weight:700;margin-bottom:2px;margin-top:3px;
+}
+.loop-card.lc-1 .loop-name{color:var(--purple-dk);}
+.loop-card.lc-2 .loop-name{color:var(--blue-dk);}
+.loop-card.lc-3 .loop-name{color:var(--amber-dk);}
+.loop-card .loop-scale{
+  font-size:9.5px;color:var(--muted);
+  margin-bottom:6px;font-style:italic;
+}
+.loop-card .loop-flow{
+  font-size:10.5px;line-height:1.55;
+  margin-bottom:5px;color:var(--text);
+}
+.loop-card .loop-actor{
+  font-size:9.5px;color:var(--muted);
+  padding-top:5px;border-top:1px dashed rgba(0,0,0,.08);
+}
+
+/* ══ L3 lifecycle banner ══ */
+.lifecycle{
+  display:flex;align-items:center;gap:6px;
+  padding:9px 12px;margin-bottom:10px;
+  background:linear-gradient(90deg,var(--teal-bg) 0%,var(--blue-bg) 50%,var(--purple-bg) 100%);
+  border:1px solid var(--border);border-radius:7px;
+  font-size:11px;
+}
+.lifecycle-title{font-weight:700;color:var(--purple-dk);margin-right:6px;white-space:nowrap;}
+.lifecycle-step{
+  font-size:10.5px;font-weight:600;
+  padding:3px 9px;border-radius:11px;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text);
+}
+.lifecycle-arrow{color:var(--muted);font-size:10px;}
+
+/* ══ Deploy badge (Planner @ L2) ══ */
+.deploy-badge{
+  position:absolute;top:5px;right:32px;
+  font-size:8px;font-weight:700;
+  padding:1px 6px;border-radius:4px;
+  background:var(--amber);color:#fff;
+  letter-spacing:.3px;
+}
+
+/* ══ L4 events chips ══ */
+.events-row{
+  margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);
+}
+.events-title{
+  font-size:11px;font-weight:700;color:var(--blue-dk);margin-bottom:6px;
+}
+.events-list{display:flex;flex-wrap:wrap;gap:5px;}
+.event-chip{
+  font-size:10px;padding:2px 8px;
+  background:var(--blue-bg);border:1px solid var(--blue);
+  border-radius:8px;color:var(--blue-dk);
+  font-family:'SF Mono','Menlo',monospace;
+}
+
+/* ══ Cross-cutting hint (L6 ⟂) ══ */
+.layer .l6-hint{
+  position:absolute;top:12px;right:12px;
+  font-size:9.5px;color:var(--coral);
+  display:flex;align-items:center;gap:3px;
+  opacity:.7;
+}
+.layer .l6-hint .perp{font-size:13px;font-weight:700;}
+
+/* ══ V1→V2 mapping section ══ */
+.mapping-section{
+  max-width:1400px;margin:14px auto 80px;padding:0 24px;
+}
+.mapping-toggle{
+  width:100%;background:var(--surface);
+  border:1.5px solid var(--purple);border-radius:10px;
+  padding:12px 18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:13px;font-weight:700;color:var(--purple-dk);
+}
+.mapping-toggle:hover{background:var(--purple-bg);}
+.mapping-toggle .arrow{transition:transform .2s;}
+.mapping-toggle.open .arrow{transform:rotate(90deg);}
+.mapping-body{
+  display:none;background:var(--surface);
+  border:1px solid var(--border);border-top:none;
+  border-radius:0 0 10px 10px;padding:14px 18px;
+  margin-top:-2px;
+}
+.mapping-body.open{display:block;}
+.mapping-table{
+  width:100%;border-collapse:collapse;font-size:11.5px;
+}
+.mapping-table th{
+  text-align:left;padding:7px 10px;
+  background:var(--bg);font-weight:700;color:var(--purple-dk);
+  border-bottom:1.5px solid var(--purple);
+}
+.mapping-table td{
+  padding:6px 10px;border-bottom:1px dashed var(--border);
+  vertical-align:top;
+}
+.mapping-table td:first-child{color:var(--muted);width:40%;}
+.mapping-table td:last-child{color:var(--text);font-weight:500;}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="hdr">
+  <div class="hdr-title">
+    <h1>AI 原生精准增长系统 V2.0 · 六层架构总览</h1>
+    <p>来源:第二章「系统总体架构」</p>
+  </div>
+  <div class="hdr-spacer"></div>
+  <button class="expand-all-btn" id="expandAllBtn">▶ 全部展开</button>
+  <div class="tog-wrap">
+    <div class="tog" id="v1Tog"></div>
+    <span>显示 V1.0 → V2.0 映射</span>
+  </div>
+  <a href="12Agent网络图.html" class="hdr-link">→ 协作网络图(细节)</a>
+</div>
+
+<!-- Info bar -->
+<div class="info">
+  <span class="info-title">六层模型(自顶向下)</span>
+  <span class="info-text">L1 接入 → L2 编排 → L3 智能体 ↔ L4 世界模型 ↔ L5 数据资产</span>
+  <span class="info-shortcut">L6 横切监督所有层(右侧)</span>
+  <span class="info-shortcut">点击层标题展开/折叠 · 点击组件看详情</span>
+</div>
+
+<!-- Overview banner: V2.0 定位 + 3 设计原则 -->
+<div class="overview-banner">
+  <div class="ov-card">
+    <div class="ov-pitch">
+      <span class="ov-pitch-tag">V2.0 定位</span>
+      <span class="ov-pitch-text">客户输入<strong>增长目标</strong>,12 个自主 Agent 协作完成「诊断 → 定位 → 用户定义 → 验证 → 创意 → 触达 → 销售 → 复盘」<strong>全链路闭环</strong>,直接交付<strong>可归因的增长结果</strong>。人在边界,不在流程中。</span>
+    </div>
+    <div class="ov-principles">
+      <div class="ov-pr">
+        <span class="ov-pr-num">①</span>
+        <div>
+          <div class="ov-pr-name">目标驱动</div>
+          <div class="ov-pr-desc">客户输入的是增长目标,不是配置项;系统内部自主拆解、规划、执行</div>
+        </div>
+      </div>
+      <div class="ov-pr">
+        <span class="ov-pr-num">②</span>
+        <div>
+          <div class="ov-pr-name">人在边界</div>
+          <div class="ov-pr-desc">人不在流程中,而在边界条件中(红线、预算上限、品牌底线);触发红线熔断、其余 Agent 自决策</div>
+        </div>
+      </div>
+      <div class="ov-pr">
+        <span class="ov-pr-num">③</span>
+        <div>
+          <div class="ov-pr-name">自验证闭环</div>
+          <div class="ov-pr-desc">AI 输出不可直接执行,必须经 Persona 池预验证或影子流量验证;每个生成式 Agent 内置 Critic 子模块</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <!-- Layers stack (left) -->
+  <div class="layers-stack" id="stack"></div>
+
+  <!-- L6 Sidebar (right, 横切) -->
+  <div class="l6-sidebar">
+    <div class="l6-head">
+      <div class="l6-tag">L6</div>
+      <div class="l6-name">治理层</div>
+      <div class="l6-tagline">Governance Layer</div>
+    </div>
+    <div class="l6-cross-badge">⟂ 横切监督所有上层</div>
+    <div class="l6-role">
+      V1.0 的 8 层横向治理在 V2.0 中被重新组织为 <strong>Policy-as-Code</strong>。L6 是 AI 原生与传统 RPA 工作流的<strong>最大分水岭</strong>——RPA 靠人审批,AI 原生靠 Policy + Observability + Kill Switch 三件套实现"自由地跑、严格地控"。
+    </div>
+    <div id="l6Components"></div>
+    <div class="l6-monitors">
+      <div class="l6-monitors-title">L6 监督的对象:</div>
+      <div class="l6-monitors-list">
+        <span class="l6-monitor-chip">L1 客户输入合规</span>
+        <span class="l6-monitor-chip">L2 Planner DAG 预审</span>
+        <span class="l6-monitor-chip">L3 每个 Agent 决策</span>
+        <span class="l6-monitor-chip">L4 World Model 写入</span>
+        <span class="l6-monitor-chip">L5 数据资产采集 / 回流</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- V1 → V2 mapping section -->
+<div class="mapping-section">
+  <div class="mapping-toggle" id="mappingToggle">
+    <span>📜 V1.0 → V2.0 完整概念映射表（来自附录 A.3 · 共 20 条）</span>
+    <span class="arrow">▶</span>
+  </div>
+  <div class="mapping-body" id="mappingBody">
+    <table class="mapping-table">
+      <thead>
+        <tr><th style="width:42%;">V1.0 概念</th><th>V2.0 进化后</th></tr>
+      </thead>
+      <tbody id="mappingTbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Detail panel -->
+<div class="detail-panel" id="detailPanel">
+  <button class="dp-close" id="dpClose">×</button>
+  <div class="dp-head">
+    <div class="dp-layer" id="dpLayer"></div>
+    <div class="dp-name" id="dpName"></div>
+  </div>
+  <div class="dp-desc" id="dpDesc"></div>
+  <div class="dp-v1" id="dpV1" style="display:none;"></div>
+</div>
+
+<script>
+// ── DATA ──
+const LAYERS = [
+  {
+    id:'L1', name:'接入层', en:'Access Layer', tagline:'目标 In · 结果 Out',
+    color:'teal', meta:'客户唯一接口',
+    role:'<strong>客户与系统交互的唯一入口</strong>。客户只做 3 件事:表达增长目标、设置边界条件、查看结果与告警。<strong>客户绝对不需要</strong>定义画像、设计场景矩阵、配置渠道、审核创意、复核权重——这些 V1.0 的人工动作全部内化为系统能力。',
+    components:[
+      {id:'goal_parser', name:'目标解析器', desc:'结构化客户输入:业务事实 / 增长目标(如 "6 个月获 Y 个 SQL,CPL ≤ Z")/ 边界条件 / 升级偏好',
+       v1:'V1.0 没有此层,所有动作都由人工配置',isNew:false},
+      {id:'dashboard', name:'客户仪表盘', desc:'当前阶段 / 运行中实验 / 实时归因 / 待审阅边界事件;支持一键回滚',
+       v1:'V1.0 客户看到的是配置面板,V2.0 看到的是结果与告警'},
+      {id:'api_gateway', name:'API 网关', desc:'外部 API 调用入口;客户 CRM / 广告账户 / ERP 数据接入授权',
+       v1:'V1.0 类似,但 V2.0 强调最小权限授权 + 合规审查'},
+    ]
+  },
+  {
+    id:'L2', name:'编排层', en:'Orchestration Layer', tagline:'Planner 是唯一指挥官',
+    color:'amber', meta:'承担 V1.0 22 步流水线全部协调职责',
+    role:'编排层只有<strong>一个 Planner Agent 和一个 Executor</strong>。Planner 不执行业务,只做拆解、规划、调度和监控。<strong>V2.0 与 V1.0 核心区别</strong>:V1.0 的 22 步是固定顺序,新行业要改流程;V2.0 的 Planner <strong>动态生成 DAG</strong>,新行业不改流程,只是 Planner 看到不同状态做不同规划。',
+    components:[
+      {id:'planner', name:'Planner Agent', desc:'目标拆解 + 动态生成 DAG + Agent 路由 + 进度监控 + 异常处理 + 重规划',
+       v1:'替代 V1.0 22 步固定流水线 — 从硬编码顺序变成动态 DAG',isNew:true},
+      {id:'executor', name:'Executor', desc:'把 Planner 的计划翻译成具体 Agent 调用;DAG 引擎(Temporal / Airflow / 自研)',
+       v1:'V2.0 进化 — V1.0 中协调由人工流水线分配执行',isNew:true},
+      {id:'event_bus', name:'Event Bus', desc:'Agent 间通信的事件流总线(Kafka / Pulsar);承载 GoalUpdated / ScenarioValidated / TouchExecuted 等核心事件',
+       v1:'V2.0 进化 — V1.0 通过流水线状态传递,无独立事件流',isNew:true},
+    ],
+    modes:[
+      {name:'冷启动模式', cond:'S0/S1 阶段;样本不足;行业库 D0/D1', agents:'Diagnosis · Positioning · Audience · Knowledge', constraint:'禁止自动放大;只用 Persona 池预验证 + L0/L1 小流量', color:'teal'},
+      {name:'稳态增长模式', cond:'S2-S4 阶段;行业库 D2 以上;置信度足够', agents:'12 Agent 满负荷协作', constraint:'Bandit 自动调权 + 自动放大 + 标准 Resolver 流程', color:'blue'},
+      {name:'危机响应模式', cond:'异常告警 / 合规事件 / 客户重大反馈', agents:'Resolver · Compliance · Reflection · Planner', constraint:'立即熔断相关动作 + 快速归因 + 自动降级或回滚', color:'coral'},
+    ]
+  },
+  {
+    id:'L3', name:'智能体层', en:'Agent Layer', tagline:'12 个自主 Agent · 网状协作',
+    color:'purple', meta:'12 Agent 不是树状层级,是网状协作',
+    role:'12 个 Agent 按职责分为 5 类。<strong>每个 Agent 都遵循统一接口契约</strong>:输入(World Model 快照 + 上游产出 + 客户偏好)→ Critic 自评 → 输出(结构化结果 + 自评分 + 不确定性 + 可回滚)。<strong>网状协作</strong>:Planner 处于中心,但其他 Agent 可以直接通过 Event Bus 互相通信。Resolver 和 Compliance 横切——执行类 Agent 的输出必须经过它们才能落地。',
+    isAgentLayer:true,
+    groups:[
+      {name:'战略类', count:3, meta:'总指挥与战略 · Planner 实际驻扎 L2', color:'teal',
+       agents:[
+         {id:'A1', name:'Planner', sub:'规划编排 · 总指挥', desc:'接收客户高阶目标 → 拆解为子任务 → 动态生成 DAG → 监控执行 → 异常重规划', v1:'替代 V1.0 22 步固定流水线', deploy:'L2'},
+         {id:'A2', name:'Diagnosis', sub:'企业诊断 · 体检医生', desc:'判断 S0-S4 阶段 + D0-D4 数据资产成熟度 → 决定本项目启用哪些能力', v1:'对应 V1.0 第 1 层企业阶段诊断'},
+         {id:'A3', name:'Positioning', sub:'定位与表达 · 战略顾问', desc:'生成定位候选 → Persona 池预验证 → 影子流量验证选优 → 品牌表达体系', v1:'替代 V1.0 第 2 层 + 步骤 3-6 人工卡点'},
+       ]},
+      {name:'数据类', count:1, meta:'平台核心护城河 · 跨 Agent 共享', color:'amber',
+       agents:[
+         {id:'A12', name:'Knowledge', sub:'知识沉淀 · 图书馆员', desc:'构建并维护行业知识图谱 + Persona 池 + 平台行业潜客库 + 行业模板库', v1:'对应 V1.0 平台数据资产底座 + 模板治理(自动化 80%)'},
+       ]},
+      {name:'用户类', count:2, meta:'用户定义与场景 · 8B 自动化', color:'blue',
+       agents:[
+         {id:'A4', name:'Audience', sub:'用户与场景 · 用研', desc:'从产品价值反推用户定义 + 场景×需求矩阵 + A/B/AB 路径标注 + L0/L1/L2 自动验证', v1:'替代 V1.0 第 3 层 + 步骤 7-8B 人工访谈'},
+         {id:'A5', name:'Signal', sub:'信号雷达 · 雷达兵', desc:'外部信号监听 + 需求显现状态机 D0-D5 + timing_score + B 类事件触发', v1:'对应 V1.0 第 4 层信号吸纳'},
+       ]},
+      {name:'执行类', count:3, meta:'创意 / 触达 / AI 销售 · 必须经过治理类拦截', color:'purple',
+       agents:[
+         {id:'A6', name:'Creative', sub:'创意生成 · 创意总监', desc:'多模态素材生成(邮件 / 落地页 / 广告 / 短视频 / 话术) + 多变体 + 合规自审 + Persona 反应预测', v1:'对应 V1.0 22 步主流程"创意表达生成"'},
+         {id:'A7', name:'Orchestration', sub:'触达编排 · 渠道指挥', desc:'人群×渠道×内容×时机组合优化 + 频控 + 预算分配 + 实验设计 + 停损规则', v1:'对应 V1.0 第 5 层(强化版,按触达任务排期)'},
+         {id:'A8', name:'Sales', sub:'AI 销售承接 · 销售前锋', desc:'多渠道直接对话(邮件/IM/语音) + RAG 答疑 + 异议处理 + 升级人类销售', v1:'★★★★ 替代 V1.0 第 7 层销售采纳(质变)'},
+       ]},
+      {name:'治理类(横切)', count:3, meta:'横切监督所有执行类 Agent · 与 L6 紧密协同', color:'coral',
+       agents:[
+         {id:'A9', name:'Resolver', sub:'冲突裁决 · 调度官', desc:'触达执行前 10 步检查 + 冲突协调 + 实时状态重判 + 10 种执行决策(execute/delay/cancel/...)', v1:'对应 V1.0 第 6 层冲突协调(去除人工审批分支)'},
+         {id:'A10', name:'Compliance', sub:'合规治理 · 纪委', desc:'Policy-as-Code 三层规则(硬规则/软规则/经验规则) + 全链路审计 + 改写建议', v1:'对应 V1.0 横向治理层第 1 条合规与权限治理'},
+         {id:'A11', name:'Reflection', sub:'复盘学习 · 总参谋', desc:'多维归因 + 叠加贡献追溯 + 权重学习 + 模板候选识别 + 异常诊断 + 客户报告生成', v1:'对应 V1.0 第 9 层模型治理 + 复盘体系(自动化 90%)'},
+       ]},
+    ]
+  },
+  {
+    id:'L4', name:'世界模型层', en:'World Model Layer', tagline:'共享意识 · Event Sourcing',
+    color:'blue', meta:'V1.0 缺乏的能力',
+    role:'World Model 是所有 Agent 共享的"现实"。它<strong>不是数据库</strong>,而是一个事件溯源系统——所有 Agent 输入都来自 World Model 的某个快照,所有 Agent 输出都作为事件写回 Event Log,再由 Materializer 更新 World Model。带来 V1.0 缺乏的三个能力:<strong>时间旅行 / 一致性快照 / 决策可重放</strong>。',
+    components:[
+      {id:'wm_store', name:'World Model Store', desc:'事件溯源的物化视图;实时业务状态;所有 Agent 共享',
+       v1:'V2.0 进化 — V1.0 各 Agent 只共享数据库,缺乏事件流',isNew:true},
+      {id:'state_snapshot', name:'State Snapshot', desc:'Resolver 重判时使用同一个 state_version,避免读到中间态',
+       v1:'V2.0 进化',isNew:true},
+      {id:'identity_graph', name:'Identity Graph', desc:'company / contact / account / device / channel / lead 关系;跨渠道频控、归因、销售证据包基础',
+       v1:'V1.0 已有,V2.0 升级为 World Model 一部分'},
+    ],
+    events:[
+      'GoalUpdated','DiagnosisCompleted','PositioningSelected','ScenarioValidated',
+      'ExternalSignalDetected','DemandStateChanged','TouchExecuted','ConversationStarted',
+      'EscalationTriggered','AnomalyDetected','WeightUpdated','TemplatePromoted'
+    ]
+  },
+  {
+    id:'L5', name:'数据资产层', en:'Data Assets Layer', tagline:'平台核心护城河',
+    color:'amber', meta:'V1.0 已有 4 + V2.0 新增 3 = 7 个核心资产',
+    role:'<strong>V1.0 已有 4 个 + V2.0 新增 3 个 = 7 个核心资产</strong>(原文 2.2 表格列了 6 个 + 5.12.3 Knowledge Agent 视角的"行业模板库",合并去重后共 7)。客户越多 → 数据越多 → 模板越准 → 冷启动越快。这是平台对客户的核心承诺:不只是工具,更是数据飞轮的引擎。',
+    components:[
+      {id:'industry_db', name:'平台行业潜客库', desc:'V1.0 已有,V2.0 扩展为多模态(文本/图/关系) + 自动化质量分级 Q1-Q4 + 成熟度 D0-D4',
+       v1:'V1.0 已有,V2.0 扩展为多模态'},
+      {id:'project_db', name:'客户项目库', desc:'V1.0 已有,V2.0 接入实时事件流',
+       v1:'V1.0 已有'},
+      {id:'sanitized_db', name:'脱敏回流标签库', desc:'V1.0 已有,V2.0 新增 Agent 决策模式回流(不只是数据)',
+       v1:'V1.0 已有,V2.0 新增决策模式回流'},
+      {id:'template_lib', name:'行业模板库', desc:'场景模板 / 信号模板 / 内容模板 / 渠道组合模板;Reflection 提名 → Knowledge 灰度 → 自动入库;所有执行类 Agent 调用',
+       v1:'V1.0 已有(运营专家手工维护),V2.0 改为 Reflection + Knowledge 自动沉淀'},
+      {id:'industry_kg', name:'行业知识图谱', desc:'实体(企业/角色/产品)+ 关系 + 事件 + 规则;支持 GraphRAG',
+       v1:'V2.0 进化 — V1.0 没有图谱化资产',isNew:true},
+      {id:'persona_pool', name:'Persona 池', desc:'LLM 合成 200-500 个虚拟用户 + 真实流量持续校准;Positioning/Audience/Creative 共享',
+       v1:'V2.0 进化 — 替代 V1.0 的人工访谈',isNew:true},
+      {id:'sandbox', name:'实验沙盒', desc:'影子流量(1-5% 真实流量) + 合成流量 + 回测平台',
+       v1:'V2.0 进化 — 替代 V1.0 的小流量测试',isNew:true},
+    ]
+  },
+];
+
+const L6_COMPONENTS = [
+  {id:'policy_engine', name:'Policy Engine', desc:'硬规则(确定性) + 软规则(LLM 边界判断) + 经验规则(RAG 历史案例)三层混合执行器',
+   v1:'V2.0 进化范式 — 替代 V1.0 横向 8 层治理的人工审批',isNew:true},
+  {id:'observability', name:'Observability', desc:'Trace + Metrics + Log 三件套;每个 Agent 决策完整可观测',
+   v1:'V2.0 强化 — V1.0 仅有日志,无完整 Trace'},
+  {id:'audit_log', name:'Audit Log', desc:'append-only ledger;不可篡改;可重放;监管可审计',
+   v1:'V2.0 强化 — V1.0 审计依赖人写复盘'},
+  {id:'kill_switch', name:'Kill Switch', desc:'异常自动熔断(指标偏离基准 N 倍 / 合规告警 / 客户投诉);可单独熔断某 Agent 或整个项目',
+   v1:'V2.0 进化 — V1.0 有"人工缺席降级"但无自动熔断',isNew:true},
+];
+
+// ── Build DOM ──
+const stack = document.getElementById('stack');
+
+LAYERS.forEach((layer, idx) => {
+  const layerEl = document.createElement('div');
+  layerEl.className = `layer l-${layer.color} collapsed`;
+  layerEl.id = layer.id;
+
+  const l6Hint = '<div class="l6-hint"><span class="perp">⟂</span><span>L6 监督</span></div>';
+  let head = `
+    <div class="layer-head" data-collapse-trigger>
+      <div class="layer-tag t-${layer.color}">${layer.id}</div>
+      <div class="layer-name">${layer.name}</div>
+      <div class="layer-tagline">${layer.en} · ${layer.tagline}</div>
+      <div class="layer-meta">${layer.meta}</div>
+      <span class="collapse-icon">▶</span>
+    </div>
+    ${l6Hint}
+    <div class="layer-role">${layer.role}</div>
+  `;
+
+  let body = '<div class="layer-body">';
+  if (layer.isAgentLayer) {
+    body += `
+      <div class="lifecycle">
+        <span class="lifecycle-title">统一生命周期 · L3 全员契约</span>
+        <span class="lifecycle-step">1. Perceive</span><span class="lifecycle-arrow">→</span>
+        <span class="lifecycle-step">2. Plan</span><span class="lifecycle-arrow">→</span>
+        <span class="lifecycle-step">3. Critic</span><span class="lifecycle-arrow">→</span>
+        <span class="lifecycle-step">4. Act</span><span class="lifecycle-arrow">→</span>
+        <span class="lifecycle-step">5. Reflect</span><span class="lifecycle-arrow">→</span>
+        <span class="lifecycle-step">6. Escalate</span>
+      </div>
+    `;
+    layer.groups.forEach(g => {
+      body += `
+        <div class="l3-group">
+          <div class="l3-group-head">
+            <div class="l3-group-tag g-${g.color}">${g.name} (${g.count})</div>
+            <div class="l3-group-meta">${g.meta}</div>
+          </div>
+          <div class="agent-grid">
+            ${g.agents.map(a => {
+              const deployBadge = a.deploy ? `<span class="deploy-badge">↗ 部署在 ${a.deploy}</span>` : '';
+              return `
+              <div class="agent-mini c-${g.color}" data-id="${a.id}" data-type="agent">
+                <span class="am-id">${a.id}</span>
+                ${deployBadge}
+                <div class="am-cat">${g.name.replace('(横切)','')}</div>
+                <div class="am-name">${a.name}</div>
+                <div class="am-sub">${a.sub}</div>
+                <div class="v1-tag" style="display:none;">${a.v1}</div>
+              </div>
+            `;}).join('')}
+          </div>
+        </div>
+      `;
+    });
+
+    // Three core closed loops (原文 4.3)
+    body += `
+      <div class="loops-row">
+        <div class="loops-title">三个嵌套闭环 · L3 网状协作的时间尺度<span class="lt-sub">(原文 4.3 · 由内向外越来越慢)</span></div>
+        <div class="loop-card lc-1">
+          <div class="loop-num">① 最内</div>
+          <div class="loop-name">决策闭环</div>
+          <div class="loop-scale">秒级 → 分钟级 · 每个 Agent 内部</div>
+          <div class="loop-flow">Perceive → Plan → Critic → Act → Reflect → 回到 Perceive</div>
+          <div class="loop-actor">所有 12 个 Agent 的每次行动都是一次决策闭环</div>
+        </div>
+        <div class="loop-card lc-2">
+          <div class="loop-num">② 中层</div>
+          <div class="loop-name">验证闭环</div>
+          <div class="loop-scale">小时级 → 天级 · 跨 Agent 漏斗</div>
+          <div class="loop-flow">假设生成 → L0 Persona 池 → L1 影子流量 → L1+ 真实小样本 → L2 行为验证放大</div>
+          <div class="loop-actor">所有面向客户的输出都必须穿过这个漏斗</div>
+        </div>
+        <div class="loop-card lc-3">
+          <div class="loop-num">③ 最外</div>
+          <div class="loop-name">学习闭环</div>
+          <div class="loop-scale">天级 → 周级 · 平台飞轮引擎</div>
+          <div class="loop-flow">执行结果 → Reflection 归因 → Knowledge 沉淀 → 模板 / 权重 / Persona 更新 → 下次决策更准</div>
+          <div class="loop-actor">这是平台行业库的飞轮引擎,客户越多越准</div>
+        </div>
+      </div>
+    `;
+  } else {
+    body += '<div class="components">';
+    layer.components.forEach(c => {
+      const newBadge = c.isNew ? '<span class="new-tag">V2.0 进化</span>' : '';
+      body += `
+        <div class="component c-${layer.color}" data-id="${c.id}" data-type="component">
+          ${newBadge}
+          <div class="c-name">${c.name}</div>
+          <div class="c-desc">${c.desc}</div>
+          <div class="v1-tag" style="display:none;">${c.v1}</div>
+        </div>
+      `;
+    });
+    body += '</div>';
+
+    if (layer.modes) {
+      body += '<div class="modes-row">';
+      layer.modes.forEach(m => {
+        body += `
+          <div class="mode-card m-${m.color}">
+            <div class="mc-name">${m.name}</div>
+            <div class="mc-row"><span class="mc-key">条件</span><span class="mc-val">${m.cond}</span></div>
+            <div class="mc-row"><span class="mc-key">主力</span><span class="mc-val">${m.agents}</span></div>
+            <div class="mc-row"><span class="mc-key">约束</span><span class="mc-val">${m.constraint}</span></div>
+          </div>
+        `;
+      });
+      body += '</div>';
+    }
+
+    if (layer.events) {
+      body += `
+        <div class="events-row">
+          <div class="events-title">Event Bus 流动的核心事件类型 (${layer.events.length})</div>
+          <div class="events-list">
+            ${layer.events.map(e => `<span class="event-chip">${e}</span>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+  }
+  body += '</div>';
+
+  layerEl.innerHTML = head + body;
+  stack.appendChild(layerEl);
+
+  if (idx < LAYERS.length - 1) {
+    const next = LAYERS[idx + 1];
+    let arrowLabel = '';
+    if (layer.id === 'L1' && next.id === 'L2') arrowLabel = '客户目标 / 边界 / 偏好 ↓';
+    else if (layer.id === 'L2' && next.id === 'L3') arrowLabel = '动态 DAG · Agent 调度 ↓';
+    else if (layer.id === 'L3' && next.id === 'L4') arrowLabel = 'Agent 输出事件 ↑↓ World Model 快照';
+    else if (layer.id === 'L4' && next.id === 'L5') arrowLabel = '物化视图 ↑↓ 长期资产调用';
+    else arrowLabel = '↓';
+    const arrow = document.createElement('div');
+    arrow.className = 'l-arrow';
+    arrow.innerHTML = `<span class="lab">${arrowLabel}</span>`;
+    stack.appendChild(arrow);
+  }
+});
+
+// L6 sidebar components
+const l6Container = document.getElementById('l6Components');
+L6_COMPONENTS.forEach(c => {
+  const newBadge = c.isNew ? '<span class="new-tag" style="position:absolute;top:-7px;right:-7px;font-size:8px;font-weight:700;padding:2px 6px;border-radius:9px;background:var(--coral);color:#fff;letter-spacing:.5px;">V2.0 进化</span>' : '';
+  const el = document.createElement('div');
+  el.className = 'l6-component';
+  el.dataset.id = c.id;
+  el.dataset.type = 'l6';
+  el.style.position = 'relative';
+  el.innerHTML = `
+    ${newBadge}
+    <div class="c-name">${c.name}</div>
+    <div class="c-desc">${c.desc}</div>
+    <div class="v1-tag" style="display:none;margin-top:5px;font-size:9px;padding:1px 6px;background:#F0E6E0;color:#6B4530;border-radius:3px;">${c.v1}</div>
+  `;
+  l6Container.appendChild(el);
+});
+
+// ── Click handlers ──
+const dp = document.getElementById('detailPanel');
+const dpLayer = document.getElementById('dpLayer');
+const dpName = document.getElementById('dpName');
+const dpDesc = document.getElementById('dpDesc');
+const dpV1 = document.getElementById('dpV1');
+const dpClose = document.getElementById('dpClose');
+
+function showDetail({layer, name, desc, v1}){
+  dpLayer.textContent = layer;
+  dpName.textContent = name;
+  dpDesc.textContent = desc;
+  if(v1){
+    dpV1.textContent = `V1.0 → V2.0:${v1}`;
+    dpV1.style.display = 'block';
+  } else {
+    dpV1.style.display = 'none';
+  }
+  dp.classList.add('show');
+}
+function hideDetail(){ dp.classList.remove('show'); }
+dpClose.onclick = hideDetail;
+document.addEventListener('keydown', e => { if(e.key === 'Escape') hideDetail(); });
+
+// Layer collapse toggle
+document.body.addEventListener('click', e => {
+  const trigger = e.target.closest('[data-collapse-trigger]');
+  if(trigger){
+    const layer = trigger.closest('.layer');
+    if(layer){
+      layer.classList.toggle('collapsed');
+      updateExpandAllBtn();
+    }
+  }
+});
+
+const expandAllBtn = document.getElementById('expandAllBtn');
+function updateExpandAllBtn(){
+  const layers = document.querySelectorAll('.layer');
+  const anyCollapsed = Array.from(layers).some(l => l.classList.contains('collapsed'));
+  expandAllBtn.textContent = anyCollapsed ? '▶ 全部展开' : '▼ 全部折叠';
+}
+expandAllBtn.onclick = () => {
+  const layers = document.querySelectorAll('.layer');
+  const anyCollapsed = Array.from(layers).some(l => l.classList.contains('collapsed'));
+  layers.forEach(l => {
+    if(anyCollapsed) l.classList.remove('collapsed');
+    else l.classList.add('collapsed');
+  });
+  updateExpandAllBtn();
+};
+updateExpandAllBtn();
+
+document.body.addEventListener('click', e => {
+  const el = e.target.closest('[data-id]');
+  if(!el) return;
+  const id = el.dataset.id;
+  const type = el.dataset.type;
+
+  let layerCode='', name='', desc='', v1='';
+  if(type === 'l6'){
+    const c = L6_COMPONENTS.find(x => x.id === id);
+    if(c){ layerCode='L6'; name=c.name; desc=c.desc; v1=c.v1; }
+  } else if(type === 'agent'){
+    LAYERS.forEach(L => {
+      if(L.isAgentLayer){
+        L.groups.forEach(g => {
+          const a = g.agents.find(x => x.id === id);
+          if(a){ layerCode=`L3 · ${g.name.replace('(横切)','')}`; name=`${a.id} · ${a.name} Agent`; desc=`${a.sub}\n\n${a.desc}`; v1=a.v1; }
+        });
+      }
+    });
+  } else if(type === 'component'){
+    LAYERS.forEach(L => {
+      if(L.components){
+        const c = L.components.find(x => x.id === id);
+        if(c){ layerCode=L.id; name=c.name; desc=c.desc; v1=c.v1; }
+      }
+    });
+  }
+  if(name) showDetail({layer:layerCode, name, desc, v1});
+});
+
+// V1 → V2 mapping data + render
+const V1_V2_MAPPING = [
+  {v1:'第 1 层 企业阶段诊断',                 v2:'Diagnosis Agent'},
+  {v1:'第 2 层 业务定位与行业配置',           v2:'Positioning Agent + Knowledge Agent(行业模板)'},
+  {v1:'第 3 层 用户定义与场景矩阵',           v2:'Audience Agent'},
+  {v1:'第 4 层 信号吸纳与需求显现',           v2:'Signal Agent'},
+  {v1:'第 5 层 跨渠道触达编排',               v2:'Orchestration Agent + Creative Agent'},
+  {v1:'第 6 层 跨渠道冲突协调',               v2:'Resolver Agent'},
+  {v1:'第 7 层 销售采纳承接',                 v2:'Sales Agent + 升级机制'},
+  {v1:'第 8 层 冷线索温养',                   v2:'Orchestration(含温养队列)'},
+  {v1:'第 9 层 模型治理与定位动态验证',       v2:'Reflection Agent + Knowledge Agent'},
+  {v1:'横向 · 合规与权限治理',                v2:'Compliance Agent + Policy-as-Code'},
+  {v1:'横向 · 统一身份解析',                  v2:'Knowledge Agent 的图谱构建能力'},
+  {v1:'横向 · 全局增长决策裁决器',            v2:'Resolver Agent + Planner Agent(高层规划)'},
+  {v1:'横向 · 人工缺席降级机制',              v2:'升级 SLA + Fallback 机制'},
+  {v1:'横向 · 模板与权重治理',                v2:'Reflection(权重) + Knowledge(模板)'},
+  {v1:'横向 · 可验证 / 可追溯 / 可复盘',      v2:'事件溯源 + Critic + Reflection'},
+  {v1:'横向 · 场景主策略路径分流',            v2:'Audience 的 A/B/AB 标注 + Signal/Orchestration 配合'},
+  {v1:'横向 · 8B 分级验证',                   v2:'Audience 内部的 L0/L1/L2 自动机制'},
+  {v1:'横向 · 追溯成熟度分层',                v2:'Reflection 的 T0-T4 等级'},
+  {v1:'资产 · 平台行业库',                    v2:'Knowledge Agent 的核心资产之一'},
+  {v1:'资产 · 脱敏回流飞轮',                  v2:'Reflection(提名) + Knowledge(沉淀) + Compliance(脱敏)'},
+];
+const mappingTbody = document.getElementById('mappingTbody');
+mappingTbody.innerHTML = V1_V2_MAPPING.map(r =>
+  `<tr><td>${r.v1}</td><td>${r.v2}</td></tr>`
+).join('');
+
+const mappingToggle = document.getElementById('mappingToggle');
+const mappingBody = document.getElementById('mappingBody');
+mappingToggle.onclick = () => {
+  mappingToggle.classList.toggle('open');
+  mappingBody.classList.toggle('open');
+};
+
+// V1.0 toggle
+const v1Tog = document.getElementById('v1Tog');
+v1Tog.onclick = function(){
+  this.classList.toggle('on');
+  const show = this.classList.contains('on');
+  document.querySelectorAll('.v1-tag').forEach(el => {
+    el.style.display = show ? 'inline-block' : 'none';
+  });
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>AI 原生精准增长系统 V2.0 · 产品方案方向对齐与校正</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#F2F1ED;
+  --surface:#FFFFFF;
+  --border:#DDDBD3;
+  --text:#1A1A18;
+  --muted:#8C8A84;
+  --teal:#1D9E75;   --teal-bg:#E1F5EE;   --teal-dk:#064E38;
+  --blue:#1860A8;   --blue-bg:#E4F0FB;   --blue-dk:#0B3D6E;
+  --amber:#B87210;  --amber-bg:#FEF0D8;  --amber-dk:#5C3800;
+  --coral:#A83820;  --coral-bg:#FAE9E5;  --coral-dk:#4A1B0C;
+  --purple:#4A42B0; --purple-bg:#ECEAFE; --purple-dk:#221D5C;
+}
+html,body{background:var(--bg);font-family:'Noto Sans SC','PingFang SC',sans-serif;color:var(--text);line-height:1.6;}
+
+/* ══ HEADER ══ */
+.hdr{
+  position:sticky;top:0;z-index:300;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:14px;
+  padding:0 28px;height:58px;
+}
+.hdr-title h1{font-size:15px;font-weight:700;}
+.hdr-title p {font-size:10px;color:var(--muted);margin-top:2px;}
+.hdr-spacer{flex:1;}
+.hdr-nav{display:flex;gap:4px;}
+.hdr-nav a{
+  font-size:11.5px;color:var(--muted);
+  padding:6px 11px;border-radius:14px;
+  text-decoration:none;
+  transition:all .15s;
+}
+.hdr-nav a:hover{background:var(--purple-bg);color:var(--purple-dk);}
+.hdr-link{
+  font-size:11px;color:var(--purple);
+  padding:5px 12px;border:1.3px solid var(--purple-bg);
+  border-radius:14px;text-decoration:none;
+  background:var(--purple-bg);
+  margin-left:6px;
+}
+.hdr-link:hover{background:var(--purple);color:#fff;}
+
+/* ══ SIDE NAV (sticky left chapter anchors) ══ */
+.side-nav{
+  position:fixed;left:16px;top:50%;transform:translateY(-50%);
+  width:138px;z-index:200;
+  background:rgba(255,255,255,.95);backdrop-filter:blur(8px);
+  border:1px solid var(--border);border-radius:10px;
+  padding:8px 6px;box-shadow:0 4px 14px rgba(0,0,0,.05);
+}
+.side-nav-title{
+  font-family:'JetBrains Mono';font-size:9px;color:#888;
+  letter-spacing:1.5px;font-weight:700;text-transform:uppercase;
+  padding:3px 9px 7px;margin-bottom:3px;
+  border-bottom:1px dashed var(--border);
+}
+.side-nav a{
+  display:block;padding:7px 9px;font-size:11.5px;
+  color:var(--muted);text-decoration:none;border-radius:6px;
+  margin-bottom:1px;transition:all .15s;line-height:1.35;
+}
+.side-nav a:hover{background:var(--purple-bg);color:var(--purple-dk);}
+.side-nav a.active{background:var(--purple);color:#fff;font-weight:700;}
+.side-nav .nav-num{
+  font-family:'JetBrains Mono';font-size:8.5px;color:#aaa;
+  letter-spacing:1px;display:block;margin-bottom:2px;font-weight:600;
+}
+.side-nav a.active .nav-num{color:rgba(255,255,255,.75);}
+@media (max-width:1380px){.side-nav{display:none;}}
+
+/* ══ MAIN ══ */
+.main{
+  max-width:1200px;
+  margin:0 auto 60px;
+  padding:24px 28px 0;
+}
+
+/* ══ PART headers ══ */
+.part{margin-bottom:48px;}
+.part-head{
+  display:flex;align-items:baseline;gap:14px;
+  margin-bottom:18px;
+  padding-bottom:11px;
+  border-bottom:2px solid var(--purple);
+}
+.part-num{
+  font-size:11px;font-weight:800;color:#fff;
+  background:var(--purple);
+  padding:4px 12px;border-radius:13px;
+  letter-spacing:.5px;
+}
+.part-title{font-size:22px;font-weight:700;color:var(--purple-dk);}
+.part-sub{font-size:11.5px;color:var(--muted);font-style:italic;margin-left:auto;}
+
+.subsection{margin-bottom:24px;}
+.sub-title{
+  font-size:14px;font-weight:700;color:var(--purple-dk);
+  margin-bottom:10px;display:flex;align-items:center;gap:8px;
+}
+.sub-title::before{
+  content:'';width:3px;height:14px;background:var(--purple);border-radius:2px;
+}
+
+/* ══ PART 0 banner ══ */
+.banner-card{
+  background:var(--surface);
+  border:1.5px solid var(--purple);
+  border-radius:10px;
+  padding:18px 22px;
+  margin-bottom:30px;
+}
+.banner-pitch{
+  display:flex;align-items:flex-start;gap:14px;
+  padding-bottom:12px;margin-bottom:12px;
+  border-bottom:1.5px dashed var(--purple-bg);
+}
+.banner-pitch-tag{
+  font-size:11px;font-weight:700;color:#fff;
+  background:var(--purple);
+  padding:5px 12px;border-radius:13px;
+  flex-shrink:0;letter-spacing:.5px;white-space:nowrap;
+}
+.banner-pitch-text{
+  font-size:13px;line-height:1.7;color:var(--text);flex:1;
+}
+.banner-pitch-text strong{color:var(--purple-dk);}
+.banner-meta{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.banner-meta-item{
+  font-size:11.5px;line-height:1.6;color:var(--text);
+}
+.banner-meta-item strong{color:var(--purple-dk);font-weight:700;}
+.banner-meta-item.warn strong{color:var(--coral-dk);}
+.banner-links{
+  margin-top:14px;padding-top:14px;
+  border-top:1.5px dashed var(--purple-bg);
+  display:flex;align-items:flex-start;gap:14px;
+}
+.banner-links-tag{
+  font-size:11px;font-weight:700;color:#fff;
+  background:var(--blue);
+  padding:5px 12px;border-radius:13px;
+  flex-shrink:0;letter-spacing:.5px;white-space:nowrap;
+}
+.banner-links-list{
+  flex:1;display:flex;flex-wrap:wrap;gap:8px;
+}
+.banner-link-chip{
+  font-size:11.5px;color:var(--blue-dk);
+  background:var(--blue-bg);
+  padding:5px 13px;border-radius:14px;
+  text-decoration:none;font-weight:600;
+  border:1.3px solid var(--blue-bg);
+  transition:all .15s;
+}
+.banner-link-chip:hover{
+  background:var(--blue);color:#fff;
+  border-color:var(--blue);
+}
+.banner-ask{
+  margin-top:14px;padding-top:14px;
+  border-top:1.5px dashed var(--purple-bg);
+  display:flex;align-items:flex-start;gap:14px;
+}
+.banner-ask-tag{
+  font-size:11px;font-weight:700;color:#fff;
+  background:var(--purple-dk);
+  padding:5px 12px;border-radius:13px;
+  flex-shrink:0;letter-spacing:.5px;white-space:nowrap;
+}
+.banner-ask-body{flex:1;font-size:12px;line-height:1.7;}
+.banner-ask-intro{margin-bottom:6px;color:var(--purple-dk);font-weight:600;}
+.banner-ask-list{padding-left:22px;color:var(--text);margin:0;}
+.banner-ask-list li{margin-bottom:5px;}
+.banner-ask-list strong{color:var(--purple-dk);}
+
+/* ══ PART 1 · AI Native ══ */
+.compare-table{
+  width:100%;border-collapse:collapse;
+  background:var(--surface);
+  border:1px solid var(--border);border-radius:8px;
+  overflow:hidden;font-size:12px;
+}
+.compare-table th{
+  text-align:left;padding:10px 14px;
+  background:var(--bg);font-weight:700;
+  border-bottom:1.5px solid var(--border);
+}
+.compare-table th.col-enabled{color:var(--muted);}
+.compare-table th.col-native{color:var(--purple-dk);background:var(--purple-bg);}
+.compare-table td{
+  padding:9px 14px;border-bottom:1px dashed var(--border);
+  vertical-align:top;
+}
+.compare-table td:first-child{color:var(--muted);font-weight:600;width:18%;}
+.compare-table td.native-cell{background:#fafaff;color:var(--text);}
+.compare-table tr:last-child td{border-bottom:none;}
+
+.captain-quote{
+  margin-top:14px;padding:12px 18px;
+  background:linear-gradient(90deg,var(--purple-bg) 0%,var(--teal-bg) 100%);
+  border-left:4px solid var(--purple);
+  border-radius:4px;
+  font-size:13px;line-height:1.7;
+}
+.captain-quote strong{color:var(--purple-dk);}
+
+/* 三原则 */
+.principles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.principle-card{
+  background:var(--surface);
+  border:1.5px solid var(--purple);
+  border-radius:8px;padding:14px 16px;
+  position:relative;
+}
+.principle-num{
+  position:absolute;top:-10px;left:14px;
+  font-size:11px;font-weight:800;color:var(--purple);
+  background:#fff;
+  padding:2px 10px;border-radius:11px;
+  border:1.5px solid var(--purple);
+}
+.principle-name{font-size:14px;font-weight:700;color:var(--purple-dk);margin:6px 0 5px;}
+.principle-desc{font-size:11.5px;color:var(--text);line-height:1.6;}
+.principle-card.highlight{
+  background:linear-gradient(180deg,var(--purple-bg) 0%,var(--surface) 50%);
+  border-width:2px;
+}
+.principle-annotate{
+  margin-top:14px;padding:10px 14px;
+  background:var(--coral-bg);
+  border-left:4px solid var(--coral);
+  border-radius:4px;
+  font-size:11.5px;line-height:1.65;color:var(--coral-dk);
+}
+.principle-annotate strong{color:var(--coral-dk);font-weight:700;}
+
+/* 价值卡片 6 张 */
+.value-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+}
+.value-card{
+  background:var(--surface);
+  border:1.5px solid;
+  border-radius:8px;
+  padding:14px 16px;
+  position:relative;
+  transition:transform .15s,box-shadow .15s;
+}
+.value-card:hover{transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,.08);}
+.value-num{
+  position:absolute;top:-9px;left:14px;
+  font-size:10.5px;font-weight:800;color:#fff;
+  padding:3px 9px;border-radius:10px;letter-spacing:.5px;
+}
+.value-name{font-size:13.5px;font-weight:700;margin:5px 0 6px;}
+.value-desc{font-size:11.5px;color:var(--text);line-height:1.6;}
+.value-card.v-teal{border-color:var(--teal);}
+.value-card.v-teal .value-num{background:var(--teal);}
+.value-card.v-teal .value-name{color:var(--teal-dk);}
+.value-card.v-blue{border-color:var(--blue);}
+.value-card.v-blue .value-num{background:var(--blue);}
+.value-card.v-blue .value-name{color:var(--blue-dk);}
+.value-card.v-amber{border-color:var(--amber);}
+.value-card.v-amber .value-num{background:var(--amber);}
+.value-card.v-amber .value-name{color:var(--amber-dk);}
+.value-card.v-purple{border-color:var(--purple);}
+.value-card.v-purple .value-num{background:var(--purple);}
+.value-card.v-purple .value-name{color:var(--purple-dk);}
+.value-card.v-coral{border-color:var(--coral);}
+.value-card.v-coral .value-num{background:var(--coral);}
+.value-card.v-coral .value-name{color:var(--coral-dk);}
+
+/* ══ PART 2 · 六层 ══ */
+.layer-row{
+  display:grid;grid-template-columns:130px 1fr 280px;
+  gap:18px;align-items:start;
+  background:var(--surface);
+  border:1.3px solid var(--border);
+  border-left-width:6px;
+  border-radius:8px;
+  padding:14px 18px;
+  margin-bottom:10px;
+  transition:border-color .15s;
+}
+.layer-row:hover{border-color:var(--purple);}
+.layer-row.l-teal{border-left-color:var(--teal);}
+.layer-row.l-amber{border-left-color:var(--amber);}
+.layer-row.l-purple{border-left-color:var(--purple);}
+.layer-row.l-blue{border-left-color:var(--blue);}
+.layer-row.l-coral{border-left-color:var(--coral);}
+.layer-id-name{display:flex;flex-direction:column;gap:5px;}
+.layer-id{
+  display:inline-block;font-size:11.5px;font-weight:700;
+  padding:3px 11px;border-radius:12px;letter-spacing:.5px;
+  width:fit-content;
+}
+.layer-id.t-teal{background:var(--teal-bg);color:var(--teal-dk);}
+.layer-id.t-amber{background:var(--amber-bg);color:var(--amber-dk);}
+.layer-id.t-purple{background:var(--purple-bg);color:var(--purple-dk);}
+.layer-id.t-blue{background:var(--blue-bg);color:var(--blue-dk);}
+.layer-id.t-coral{background:var(--coral-bg);color:var(--coral-dk);}
+.layer-name-text{font-size:14px;font-weight:700;color:var(--text);}
+.layer-cap{
+  display:flex;flex-direction:column;gap:6px;
+}
+.layer-cap-headline{
+  font-size:12.5px;font-weight:700;color:var(--purple-dk);
+}
+.layer-cap-desc{
+  font-size:11.5px;color:var(--text);line-height:1.65;
+}
+.layer-comps{
+  display:flex;flex-wrap:wrap;gap:5px;align-content:flex-start;
+}
+.layer-comps-label{
+  width:100%;font-size:9.5px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.08em;font-weight:700;
+  margin-bottom:2px;
+}
+.comp-chip{
+  font-size:10.5px;padding:2px 8px;
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:9px;color:var(--text);
+}
+
+/* ══ PART 3 · 12Agent ══ */
+.agent-roles{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:10px;
+  margin-bottom:18px;
+}
+.role-group{
+  background:var(--surface);
+  border:1.3px solid;
+  border-radius:8px;padding:11px 13px;
+}
+.role-group.r-teal{border-color:var(--teal);background:var(--teal-bg);}
+.role-group.r-blue{border-color:var(--blue);background:var(--blue-bg);}
+.role-group.r-purple{border-color:var(--purple);background:var(--purple-bg);}
+.role-group.r-coral{border-color:var(--coral);background:var(--coral-bg);}
+.role-group.r-amber{border-color:var(--amber);background:var(--amber-bg);}
+.role-group-name{
+  font-size:11.5px;font-weight:700;margin-bottom:6px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.role-group.r-teal .role-group-name{color:var(--teal-dk);}
+.role-group.r-blue .role-group-name{color:var(--blue-dk);}
+.role-group.r-purple .role-group-name{color:var(--purple-dk);}
+.role-group.r-coral .role-group-name{color:var(--coral-dk);}
+.role-group.r-amber .role-group-name{color:var(--amber-dk);}
+.role-count{
+  font-size:9.5px;font-weight:600;color:var(--muted);
+  background:#fff;padding:1px 7px;border-radius:8px;
+}
+.role-list{
+  font-size:10.5px;color:var(--text);line-height:1.7;
+}
+.role-list span{
+  display:inline-block;background:#fff;
+  padding:1px 7px;margin:2px 3px 2px 0;border-radius:4px;
+  font-weight:600;
+}
+
+.flow-stepper{
+  display:flex;align-items:stretch;gap:0;
+  background:var(--surface);
+  border:1.3px solid var(--border);
+  border-radius:8px;padding:14px;
+  margin-bottom:18px;overflow-x:auto;
+}
+.flow-step{
+  flex:1;min-width:130px;
+  padding:10px 12px;
+  border-right:1px dashed var(--border);
+  position:relative;
+}
+.flow-step:last-child{border-right:none;}
+.flow-step-badge{
+  display:inline-block;font-size:11px;font-weight:800;color:#fff;
+  background:var(--purple);
+  padding:2px 9px;border-radius:9px;margin-bottom:5px;
+}
+.flow-step-name{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.flow-step-agent{font-size:10px;color:var(--muted);line-height:1.5;}
+
+.coop-modes{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;
+  margin-bottom:18px;
+}
+.coop-card{
+  background:var(--surface);
+  border:1.3px solid var(--border);border-left:4px solid;
+  border-radius:6px;padding:10px 12px;
+}
+.coop-card.c-blue{border-left-color:var(--blue);}
+.coop-card.c-purple{border-left-color:var(--purple);}
+.coop-card.c-amber{border-left-color:var(--amber);}
+.coop-card.c-coral{border-left-color:var(--coral);}
+.coop-name{font-size:12.5px;font-weight:700;margin-bottom:3px;}
+.coop-desc{font-size:10.5px;color:var(--muted);line-height:1.55;}
+.coop-eg{font-size:10px;color:var(--text);margin-top:5px;font-style:italic;}
+
+.lifecycle-strip{
+  background:linear-gradient(90deg,var(--teal-bg) 0%,var(--blue-bg) 50%,var(--purple-bg) 100%);
+  border:1px solid var(--border);
+  border-radius:7px;padding:14px 16px;
+}
+.lifecycle-title{
+  font-size:12.5px;font-weight:700;color:var(--purple-dk);margin-bottom:8px;
+}
+.lifecycle-steps{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+.lifecycle-step{
+  font-size:11px;font-weight:700;
+  padding:4px 11px;border-radius:11px;
+  background:var(--surface);border:1.3px solid var(--purple);
+  color:var(--purple-dk);
+}
+.lifecycle-arrow{color:var(--muted);font-size:11px;font-weight:600;}
+.lifecycle-note{
+  margin-top:10px;font-size:11px;color:var(--text);line-height:1.65;
+  padding-top:8px;border-top:1px dashed rgba(74,66,176,.3);
+}
+.lifecycle-note strong{color:var(--purple-dk);font-weight:700;}
+
+/* ══ PART 4 · Agent tabs ══ */
+.agent-tabs{
+  display:flex;gap:6px;margin-bottom:18px;
+  border-bottom:2px solid var(--border);
+}
+.agent-tab{
+  padding:10px 18px 11px;
+  font-size:13px;font-weight:600;
+  color:var(--muted);
+  background:none;border:none;cursor:pointer;
+  border-bottom:3px solid transparent;
+  margin-bottom:-2px;
+  transition:all .15s;
+}
+.agent-tab:hover{color:var(--purple-dk);}
+.agent-tab.active{
+  color:var(--purple-dk);
+  border-bottom-color:var(--purple);
+}
+.agent-tab-num{
+  font-size:10px;font-weight:800;color:var(--muted);
+  margin-right:6px;
+}
+.agent-tab.active .agent-tab-num{color:var(--purple);}
+
+.agent-panel{display:none;}
+.agent-panel.active{display:block;}
+
+.agent-storyline{
+  background:var(--purple-bg);
+  border-left:4px solid var(--purple);
+  border-radius:5px;
+  padding:11px 16px;
+  margin-bottom:18px;
+  font-size:13px;color:var(--purple-dk);
+  line-height:1.7;
+}
+.agent-storyline strong{font-weight:700;}
+
+.agent-spec-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:14px;
+  margin-bottom:14px;
+}
+.spec-block{
+  background:var(--surface);
+  border:1.3px solid var(--border);
+  border-radius:7px;padding:13px 16px;
+}
+.spec-block.full{grid-column:1 / -1;}
+.spec-block.highlight-critic{
+  border-color:var(--teal);background:var(--teal-bg);
+}
+.spec-block.highlight-loop{
+  border-color:var(--amber);background:var(--amber-bg);
+}
+.spec-title{
+  font-size:11.5px;font-weight:700;
+  margin-bottom:8px;
+  display:flex;align-items:center;gap:6px;
+}
+.spec-block.highlight-critic .spec-title{color:var(--teal-dk);}
+.spec-block.highlight-loop .spec-title{color:var(--amber-dk);}
+.spec-title-tag{
+  font-size:9px;padding:1px 7px;border-radius:8px;
+  background:#fff;letter-spacing:.3px;
+}
+.spec-block.highlight-critic .spec-title-tag{color:var(--teal-dk);border:1px solid var(--teal);}
+.spec-block.highlight-loop .spec-title-tag{color:var(--amber-dk);border:1px solid var(--amber);}
+.spec-content{font-size:11.5px;line-height:1.7;color:var(--text);}
+.spec-content ul{padding-left:18px;}
+.spec-content li{margin-bottom:3px;}
+.spec-content table{
+  width:100%;border-collapse:collapse;font-size:11px;
+}
+.spec-content table td{
+  padding:5px 8px;border-bottom:1px dashed var(--border);vertical-align:top;
+}
+.spec-content table td:first-child{color:var(--muted);font-weight:600;width:34%;}
+.spec-content strong{color:var(--purple-dk);}
+
+/* ══ PART 5 · 难题表 ══ */
+.issues-intro{
+  font-size:12.5px;line-height:1.7;color:var(--text);
+  margin-bottom:14px;
+}
+.issues-table{
+  width:100%;border-collapse:collapse;
+  background:var(--surface);
+  border:1px solid var(--border);border-radius:8px;
+  overflow:hidden;font-size:12px;
+}
+.issues-table th{
+  text-align:left;padding:10px 14px;
+  background:var(--bg);font-weight:700;color:var(--purple-dk);
+  border-bottom:1.5px solid var(--border);
+}
+.issues-table td{padding:10px 14px;border-bottom:1px dashed var(--border);vertical-align:top;}
+.issues-table tr:last-child td{border-bottom:none;}
+.issues-table tr.row-red td{background:rgba(168,56,32,.04);}
+.issues-name{font-weight:700;}
+.issues-name.red{color:var(--coral-dk);}
+.issues-name.yellow{color:var(--amber-dk);}
+.issues-resolution{color:var(--text);}
+
+.issues-coda{
+  margin-top:14px;padding:12px 16px;
+  background:var(--purple-bg);
+  border-left:4px solid var(--purple);
+  border-radius:4px;
+  font-size:11.5px;line-height:1.7;color:var(--purple-dk);
+}
+.issues-coda strong{font-weight:700;}
+
+/* 5.1 hypothesis card */
+.hypothesis-card{
+  background:var(--surface);
+  border:1.5px solid var(--coral);
+  border-left:6px solid var(--coral);
+  border-radius:8px;
+  padding:14px 18px;
+}
+.hypothesis-statement{
+  font-size:14px;line-height:1.7;color:var(--coral-dk);
+  margin-bottom:8px;
+}
+.hypothesis-statement strong{color:var(--coral-dk);font-weight:700;}
+.hypothesis-clarify{
+  font-size:12px;color:var(--text);line-height:1.7;
+  padding-bottom:10px;margin-bottom:10px;
+  border-bottom:1px dashed var(--border);
+}
+.hypothesis-clarify strong{color:var(--coral-dk);}
+.hypothesis-resolution{
+  font-size:12px;line-height:1.65;color:var(--text);
+  display:flex;gap:10px;align-items:flex-start;
+}
+.hypothesis-label{
+  font-size:10.5px;font-weight:700;color:#fff;
+  background:var(--coral);
+  padding:3px 9px;border-radius:9px;
+  flex-shrink:0;white-space:nowrap;
+}
+
+/* ══ PART 6 · 第七章填空提议 ══ */
+.part6-anchor{
+  background:var(--surface);
+  border:1.3px solid var(--border);
+  border-radius:8px;
+  padding:14px 18px;
+}
+.part6-quote{
+  display:flex;align-items:flex-start;gap:10px;
+  padding-bottom:10px;margin-bottom:10px;
+  border-bottom:1px dashed var(--border);
+}
+.part6-quote-tag{
+  font-size:10px;font-weight:700;
+  color:var(--purple-dk);background:var(--purple-bg);
+  padding:3px 9px;border-radius:9px;
+  flex-shrink:0;letter-spacing:.3px;white-space:nowrap;
+}
+.part6-quote-text{
+  font-size:11.5px;line-height:1.65;color:var(--muted);font-style:italic;
+}
+.part6-anchor-body{
+  font-size:12.5px;line-height:1.7;color:var(--text);
+}
+.part6-anchor-body strong{color:var(--purple-dk);}
+
+.part6-stage-table{
+  width:100%;border-collapse:collapse;
+  background:var(--surface);
+  border:1px solid var(--border);border-radius:8px;
+  overflow:hidden;font-size:12px;
+}
+.part6-stage-table th{
+  text-align:left;padding:10px 14px;
+  background:var(--purple-bg);font-weight:700;color:var(--purple-dk);
+  border-bottom:1.5px solid var(--border);
+}
+.part6-stage-table td{
+  padding:10px 14px;border-bottom:1px dashed var(--border);
+  vertical-align:top;
+}
+.part6-stage-table td:first-child{color:var(--text);font-weight:600;width:22%;}
+.part6-stage-table td:nth-child(2){color:var(--purple-dk);font-weight:600;width:24%;}
+.part6-stage-table tr:last-child td{border-bottom:none;}
+.part6-stage-table strong{color:var(--purple-dk);}
+
+.part6-dims{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+}
+.part6-dim-card{
+  background:var(--surface);
+  border:1.3px solid var(--border);
+  border-left:4px solid var(--purple);
+  border-radius:7px;
+  padding:12px 16px;
+}
+.part6-dim-title{
+  font-size:12.5px;font-weight:700;color:var(--purple-dk);
+  margin-bottom:8px;
+}
+.part6-dim-list{
+  padding-left:18px;font-size:11.5px;line-height:1.85;color:var(--text);
+  margin:0;
+}
+.part6-dim-list li{margin-bottom:2px;}
+@media (max-width:980px){.part6-dims{grid-template-columns:1fr;}}
+
+/* 5.1 双轴命题卡片 */
+.dual-axis-card{
+  background:var(--surface);
+  border:1.3px solid var(--border);
+  border-radius:8px;
+  padding:14px 18px;
+}
+.dual-axis-intro{
+  font-size:12.5px;line-height:1.75;color:var(--text);
+  padding-bottom:11px;margin-bottom:11px;
+  border-bottom:1px dashed var(--border);
+}
+.dual-axis-intro strong{color:var(--purple-dk);}
+.dual-axis-quote{
+  display:flex;align-items:flex-start;gap:10px;
+  margin-bottom:11px;
+}
+.dual-axis-quote-tag{
+  font-size:10px;font-weight:700;
+  color:var(--purple-dk);background:var(--purple-bg);
+  padding:3px 9px;border-radius:9px;
+  flex-shrink:0;letter-spacing:.3px;white-space:nowrap;
+}
+.dual-axis-quote-text{
+  font-size:11.5px;line-height:1.65;color:var(--muted);font-style:italic;
+}
+.dual-axis-split{
+  display:grid;grid-template-columns:1fr 1fr;gap:14px;
+}
+.axis-block{
+  border:1.3px solid;border-radius:7px;
+  padding:11px 14px;
+  position:relative;
+}
+.axis-block.axis-main{
+  border-color:var(--purple);
+  background:var(--purple-bg);
+}
+.axis-block.axis-aux{
+  border-color:var(--border);
+  background:var(--bg);
+}
+.axis-label{
+  position:absolute;top:-9px;left:12px;
+  font-size:10px;font-weight:800;color:#fff;
+  padding:2px 9px;border-radius:10px;letter-spacing:.5px;
+}
+.axis-block.axis-main .axis-label{background:var(--purple);}
+.axis-block.axis-aux .axis-label{background:var(--muted);}
+.axis-name{
+  font-size:13px;font-weight:700;margin:4px 0 5px;
+}
+.axis-block.axis-main .axis-name{color:var(--purple-dk);}
+.axis-block.axis-aux .axis-name{color:var(--text);}
+.axis-desc{
+  font-size:11.5px;line-height:1.6;color:var(--text);
+}
+@media (max-width:980px){.dual-axis-split{grid-template-columns:1fr;}}
+
+/* 5.2 客户价值兑现地图 + 验收 */
+.cvmap-table{
+  width:100%;border-collapse:collapse;
+  background:var(--surface);
+  border:1px solid var(--border);border-radius:8px;
+  overflow:hidden;font-size:12px;
+  margin-bottom:14px;
+}
+.cvmap-table th{
+  text-align:left;padding:10px 14px;
+  background:var(--purple-bg);font-weight:700;color:var(--purple-dk);
+  border-bottom:1.5px solid var(--border);
+}
+.cvmap-table td{
+  padding:10px 14px;border-bottom:1px dashed var(--border);
+  vertical-align:top;font-size:11.5px;line-height:1.6;
+}
+.cvmap-table td:first-child{
+  color:var(--purple-dk);font-weight:700;width:20%;
+  background:#fafaff;
+}
+.cvmap-table td:nth-child(2){color:var(--text);width:34%;}
+.cvmap-table td:nth-child(3){color:var(--text);}
+.cvmap-table tr:last-child td{border-bottom:none;}
+.cvmap-table strong{color:var(--purple-dk);}
+
+.acceptance-block{
+  background:var(--teal-bg);
+  border:1.3px solid var(--teal);
+  border-radius:8px;
+  padding:12px 16px;
+}
+.acceptance-title{
+  font-size:12px;font-weight:700;color:var(--teal-dk);
+  margin-bottom:8px;display:flex;align-items:center;gap:8px;
+}
+.acceptance-title-tag{
+  font-size:10px;padding:2px 9px;border-radius:9px;
+  background:var(--teal);color:#fff;letter-spacing:.3px;
+}
+.acceptance-list{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:6px 14px;
+  padding-left:18px;margin:0;
+  font-size:11.5px;line-height:1.6;color:var(--text);
+}
+.acceptance-list li{margin-bottom:2px;}
+.acceptance-list strong{color:var(--teal-dk);}
+@media (max-width:980px){.acceptance-list{grid-template-columns:1fr;}}
+
+/* 5.3 辅轴外壳 */
+.aux-axis-wrap{
+  background:var(--bg);
+  border:1.3px dashed var(--border);
+  border-radius:8px;
+  padding:14px 16px;
+}
+.aux-axis-note{
+  font-size:11.5px;line-height:1.6;color:var(--muted);
+  margin-bottom:12px;
+  padding-bottom:10px;
+  border-bottom:1px dashed var(--border);
+  font-style:italic;
+}
+.aux-axis-note strong{color:var(--text);font-style:normal;}
+.aux-subtitle{
+  font-size:12px;font-weight:700;color:var(--text);
+  margin:14px 0 8px;
+  display:flex;align-items:center;gap:8px;
+}
+.aux-subtitle:first-child{margin-top:0;}
+.aux-subtitle::before{
+  content:'';width:3px;height:12px;background:var(--muted);border-radius:2px;
+}
+
+/* ══ FOOTER ══ */
+.footer{
+  text-align:center;font-size:10.5px;color:var(--muted);
+  padding:24px;margin-top:30px;
+  border-top:1px dashed var(--border);
+}
+
+/* 通用 chip */
+.chip{
+  display:inline-block;font-size:10.5px;
+  padding:2px 8px;background:var(--purple-bg);color:var(--purple-dk);
+  border-radius:9px;font-weight:600;margin:1px 2px;
+}
+
+/* anchor offset for sticky nav */
+.part:target{scroll-margin-top:70px;}
+.part{scroll-margin-top:70px;}
+
+/* ══ Planner Demo · 交互演示 ══ */
+.demo-banner{
+  background:linear-gradient(90deg,var(--purple) 0%,var(--blue) 100%);
+  color:#fff;
+  border-radius:8px;
+  padding:12px 18px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:14px;flex-wrap:wrap;margin-bottom:14px;
+}
+.demo-scenario{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.demo-tag{
+  font-size:11px;font-weight:700;
+  background:rgba(255,255,255,.22);
+  padding:3px 10px;border-radius:11px;letter-spacing:.5px;
+}
+.demo-title{font-size:13px;font-weight:600;}
+.demo-progress-text{
+  font-size:11px;font-weight:600;
+  background:rgba(255,255,255,.15);
+  padding:3px 10px;border-radius:11px;
+}
+.demo-controls{display:flex;gap:6px;}
+.demo-btn{
+  font-size:11.5px;font-weight:600;
+  padding:6px 13px;
+  border-radius:14px;cursor:pointer;
+  border:1.3px solid rgba(255,255,255,.4);
+  background:rgba(255,255,255,.1);color:#fff;
+  transition:all .15s;
+}
+.demo-btn:hover{background:rgba(255,255,255,.25);}
+.demo-btn-primary{
+  background:#fff;color:var(--purple-dk);
+  border-color:#fff;
+}
+.demo-btn-primary:hover{background:var(--bg);color:var(--purple-dk);}
+
+.demo-stage{
+  display:grid;
+  grid-template-columns:240px 220px 1fr;
+  gap:12px;margin-bottom:14px;
+  align-items:stretch;
+}
+.demo-input-panel,
+.demo-progress-panel,
+.demo-detail-panel{
+  background:var(--surface);
+  border:1.3px solid var(--border);
+  border-radius:8px;
+  padding:12px 14px;
+  display:flex;flex-direction:column;
+}
+.demo-panel-title{
+  font-size:11px;font-weight:700;color:var(--purple-dk);
+  text-transform:uppercase;letter-spacing:.08em;
+  padding-bottom:8px;margin-bottom:9px;
+  border-bottom:1.5px solid var(--purple-bg);
+}
+
+/* 客户输入卡片 */
+.demo-input-card{font-size:11px;line-height:1.55;flex:1;}
+.demo-kv{
+  padding:6px 0;
+  border-bottom:1px dashed var(--border);
+}
+.demo-kv:last-child{border-bottom:none;}
+.demo-k{
+  font-size:9.5px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;
+}
+.demo-v{font-size:11px;color:var(--text);line-height:1.5;}
+
+/* 7 步进度 */
+.demo-progress-list{display:flex;flex-direction:column;gap:5px;flex:1;}
+.demo-step{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 10px;
+  background:var(--bg);
+  border:1.3px solid transparent;
+  border-radius:6px;cursor:pointer;
+  transition:all .15s;
+}
+.demo-step:hover{background:var(--purple-bg);}
+.demo-step-num{
+  width:22px;height:22px;flex-shrink:0;
+  border-radius:50%;
+  background:var(--surface);border:1.3px solid var(--border);
+  color:var(--muted);
+  font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+}
+.demo-step-text{flex:1;min-width:0;}
+.demo-step-name{font-size:11.5px;font-weight:700;color:var(--text);}
+.demo-step-cn{font-size:10px;color:var(--muted);margin-top:1px;}
+.demo-step.active{
+  background:var(--purple-bg);
+  border-color:var(--purple);
+  box-shadow:0 0 0 2px rgba(74,66,176,.15);
+}
+.demo-step.active .demo-step-num{
+  background:var(--purple);color:#fff;border-color:var(--purple);
+}
+.demo-step.active .demo-step-name{color:var(--purple-dk);}
+.demo-step.done .demo-step-num{
+  background:var(--teal);color:#fff;border-color:var(--teal);
+}
+.demo-step.done .demo-step-num::before{content:'✓';}
+.demo-step.done .demo-step-num{font-size:0;}
+.demo-step.done .demo-step-num::before{font-size:12px;}
+.demo-step.done .demo-step-name{color:var(--teal-dk);}
+.demo-step.done{opacity:.85;}
+
+/* 当前步详情面板 */
+.demo-detail{font-size:11.5px;line-height:1.6;flex:1;}
+.demo-empty{
+  color:var(--muted);font-style:italic;font-size:12px;
+  padding:30px 12px;text-align:center;
+}
+.demo-detail-head{
+  display:flex;align-items:center;gap:10px;
+  padding-bottom:9px;margin-bottom:11px;
+  border-bottom:1.5px dashed var(--purple-bg);
+}
+.demo-detail-num{
+  font-size:10.5px;font-weight:800;color:#fff;
+  background:var(--purple);
+  padding:3px 9px;border-radius:10px;letter-spacing:.5px;
+}
+.demo-detail-name{font-size:14px;font-weight:700;color:var(--purple-dk);}
+.demo-detail-section{margin-bottom:11px;}
+.demo-detail-section:last-child{margin-bottom:0;}
+.demo-section-title{
+  font-size:11px;font-weight:700;color:var(--purple-dk);
+  margin-bottom:5px;
+}
+.demo-section-content{font-size:11.5px;color:var(--text);line-height:1.65;}
+.demo-output-row{
+  display:flex;gap:10px;
+  padding:5px 0;
+  border-bottom:1px dashed var(--border);
+}
+.demo-output-row:last-child{border-bottom:none;}
+.demo-output-k{
+  font-size:10.5px;font-weight:600;color:var(--muted);
+  width:30%;flex-shrink:0;
+}
+.demo-output-v{
+  font-size:11px;color:var(--text);flex:1;
+  line-height:1.55;font-family:'SF Mono','Menlo',monospace;
+  font-feature-settings:"tnum";
+}
+.demo-kv-sub{display:flex;gap:6px;font-size:10.5px;line-height:1.5;}
+.demo-k-sub{color:var(--muted);font-weight:600;min-width:80px;}
+.demo-v-sub{color:var(--text);}
+
+.demo-detail-section.critic-section{
+  background:var(--teal-bg);
+  border-left:3px solid var(--teal);
+  border-radius:5px;
+  padding:9px 12px;
+}
+.demo-detail-section.critic-section .demo-section-title{color:var(--teal-dk);}
+.demo-critic-list{padding-left:18px;color:var(--teal-dk);font-size:11px;line-height:1.7;}
+.demo-critic-list li{margin-bottom:1px;}
+
+/* DAG 可视化 */
+.demo-dag-panel{
+  background:var(--surface);
+  border:1.3px solid var(--border);
+  border-radius:8px;
+  padding:13px 16px;
+  margin-bottom:18px;
+}
+.demo-dag{
+  display:flex;align-items:center;gap:6px;
+  flex-wrap:wrap;margin-top:6px;
+  min-height:40px;
+}
+.demo-dag-node{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:14px;
+  font-size:11px;font-weight:600;
+  border:1.3px solid;transition:all .25s;
+}
+.demo-node-icon{font-size:12px;}
+.demo-node-name{}
+.demo-node-idle{
+  background:var(--bg);border-color:var(--border);color:var(--muted);
+}
+.demo-node-running{
+  background:var(--blue-bg);border-color:var(--blue);color:var(--blue-dk);
+  box-shadow:0 0 0 2px rgba(24,96,168,.2);
+  animation:demo-pulse 1.4s ease-in-out infinite;
+}
+@keyframes demo-pulse{
+  0%,100%{opacity:1;}
+  50%{opacity:.62;}
+}
+.demo-node-done{
+  background:var(--teal-bg);border-color:var(--teal);color:var(--teal-dk);
+}
+.demo-dag-arrow{color:var(--muted);font-size:13px;font-weight:700;}
+
+/* responsive */
+@media (max-width:980px){
+  .principles,.agent-spec-grid,.coop-modes,.value-grid{grid-template-columns:repeat(2,1fr);}
+  .agent-roles{grid-template-columns:repeat(2,1fr);}
+  .layer-row{grid-template-columns:1fr;gap:8px;}
+  .layer-row > *:nth-child(3){margin-top:6px;}
+  .demo-stage{grid-template-columns:1fr;}
+}
+
+/* ══ PART 4 · 12 Agent Demo iframe ══ */
+.agent-demo-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:8px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.agent-demo-iframe{width:100%;height:1020px;border:none;display:block;background:#F5F5F0;}
+.agent-demo-foot{padding:11px 18px;background:#fafaf5;border-top:1px solid var(--border);display:flex;align-items:center;font-size:11.5px;color:var(--text);gap:14px;flex-wrap:wrap;}
+.agent-demo-foot a{color:var(--purple);font-weight:600;text-decoration:none;}
+.agent-demo-foot a:hover{text-decoration:underline;}
+.agent-demo-foot-note{margin-left:auto;color:var(--muted);font-size:10.5px;}
+
+</style>
+</head>
+<body>
+
+<!-- ═════ Header ═════ -->
+<div class="hdr">
+  <div class="hdr-title">
+    <h1>AI 原生精准增长系统 V2.0 · 产品方案方向对齐与校正</h1>
+    <p>v0.1 · 输出 PM Team · 2026-05-09</p>
+  </div>
+  <div class="hdr-spacer"></div>
+  <nav class="hdr-nav">
+    <a href="#part1">1 · AI Native 范式</a>
+    <a href="#part2">2 · 六层架构</a>
+    <a href="#part3">3 · 协作流程</a>
+    <a href="#part4">4 · 12 Agent 演示</a>
+    <a href="#part5">5 · 落地路径与 KPI</a>
+    <a href="#part6">6 · 命题与挑战</a>
+  </nav>
+</div>
+
+<!-- ═════ Side nav (chapter anchors, sticky on left) ═════ -->
+<aside class="side-nav" id="sideNav">
+  <div class="side-nav-title">CHAPTERS · 章节</div>
+  <a href="#part1"><span class="nav-num">PART 1</span>AI Native 范式</a>
+  <a href="#part2"><span class="nav-num">PART 2</span>六层架构</a>
+  <a href="#part3"><span class="nav-num">PART 3</span>12Agent 协作流程</a>
+  <a href="#part4"><span class="nav-num">PART 4</span>12 Agent 演示</a>
+  <a href="#part5"><span class="nav-num">PART 5</span>落地路径与 KPI</a>
+  <a href="#part6"><span class="nav-num">PART 6</span>命题与挑战</a>
+</aside>
+
+<!-- ═════ Main ═════ -->
+<div class="main">
+
+<!-- ─── Part 0 · Banner ─── -->
+<div class="banner-card">
+  <div class="banner-pitch">
+    <span class="banner-pitch-tag">文档定位</span>
+    <span class="banner-pitch-text">
+      上次基于 docx 第三章准备的 <strong>12Agent 协作流程图</strong> 已与团队对齐。本文承接这一对齐,把 V2.0 的<strong>产品定义和核心能力</strong>完整呈现,提交做产品方案方向的对齐与校正。
+    </span>
+  </div>
+  <div class="banner-links">
+    <span class="banner-links-tag">关联资源</span>
+    <div class="banner-links-list">
+      <a href="六层架构总览.html" target="_blank" rel="noopener" class="banner-link-chip">→ 六层架构总览</a>
+      <a href="12Agent网络图.html" target="_blank" rel="noopener" class="banner-link-chip">→ 12Agent 协作流程图</a>
+      <a href="agent demo/index.html" target="_blank" rel="noopener" class="banner-link-chip">→ 12 Agent Demo Portal</a>
+    </div>
+  </div>
+  <div class="banner-meta">
+    <div class="banner-meta-item warn">
+      <strong>本次明确不涉及:</strong> 实现路径与 MVP 路线图、工程阶段、资源、时间窗、技术选型、字段级接口、Prompt 细节
+    </div>
+    <div class="banner-meta-item">
+      <strong>事先说明:</strong> 文档中"V1.0"仅作为 AI-Enabled 范式的修辞对照,不是真实产品;V2.0 是 from-scratch 的 AI-Native 系统。三原则保留 docx 原文措辞,原则 ③ 的产品诠释 = <strong>自验证 + 自学习 + 专家退场</strong>。
+    </div>
+  </div>
+  <div class="banner-ask">
+    <span class="banner-ask-tag">重点 review</span>
+    <div class="banner-ask-body">
+      <div class="banner-ask-intro">本次想请老板<strong>重点 review</strong>的 3 件事:</div>
+      <ol class="banner-ask-list">
+        <li><strong>AI Native 范式</strong> —— 概念定义与澄清、三原则诠释(尤其原则 ③ "自验证 + 自学习 + 专家退场")、6 条客户价值承诺(Part 1)</li>
+        <li><strong>产品方案框架确认</strong> —— 六层架构 → 产品能力的映射、12Agent 协作流程是否承载 V2.0 完整产品形态(Part 2 / 3 / 4)</li>
+        <li><strong>落地思路和路径确认</strong> —— MVP 阶段化客户价值兑现地图、核心命题与挑战应对(Part 5 / 6)</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Part 1 · AI Native ─── -->
+<section class="part" id="part1">
+  <div class="part-head">
+    <span class="part-num">PART 1</span>
+    <span class="part-title">AI Native 范式</span>
+    <span class="part-sub">概念锚定 · 三原则 · 用户价值感知</span>
+  </div>
+
+  <div class="subsection">
+    <div class="sub-title">1.1 谁是机长 — AI Enabled vs AI Native</div>
+    <table class="compare-table">
+      <thead>
+        <tr><th>维度</th><th class="col-enabled">AI Enabled</th><th class="col-native">AI Native</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>谁是机长</td><td>人是机长,AI 是副驾</td><td class="native-cell"><strong>AI 是机长,人在塔台</strong></td></tr>
+        <tr><td>流程结构</td><td>固定流水线,关键节点人工卡点</td><td class="native-cell">事件驱动的 Agent 协作网络</td></tr>
+        <tr><td>人的位置</td><td>Human-in-the-Loop(人在流程中)</td><td class="native-cell">Human-on-the-Loop(人在边界) + Human-at-the-Result(人在结果)</td></tr>
+        <tr><td>验证范式</td><td>依赖真实人类样本(访谈、复盘)</td><td class="native-cell">数字孪生 Persona 池 + 自动小流量影子验证</td></tr>
+        <tr><td>当人不在场</td><td>系统降级,不能继续高质量运行</td><td class="native-cell">系统照常自驱动运行,人到场只为审阅边界事件</td></tr>
+      </tbody>
+    </table>
+    <div class="captain-quote">
+      <strong>关键区分:</strong> AI Enabled 与 AI Native 的本质差异,不在 "AI 做了多少事",而在 <strong>"谁是机长"</strong>。 V2.0 是后者。
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="sub-title">1.2 V2.0 三原则</div>
+    <div class="principles">
+      <div class="principle-card">
+        <span class="principle-num">原则 ①</span>
+        <div class="principle-name">目标驱动</div>
+        <div class="principle-desc">客户只表达<strong>增长意图</strong>(由系统解析为可量化目标),不是配置项;系统内部自主拆解、规划、执行</div>
+      </div>
+      <div class="principle-card">
+        <span class="principle-num">原则 ②</span>
+        <div class="principle-name">人在边界</div>
+        <div class="principle-desc">人不在流程中,而在<strong>边界条件</strong>中(红线、预算、品牌底线);红线触发熔断,非红线由 Agent 自决策</div>
+      </div>
+      <div class="principle-card highlight">
+        <span class="principle-num">原则 ③</span>
+        <div class="principle-name">自验证闭环</div>
+        <div class="principle-desc">AI 输出不可直接执行,必须经 Persona 池或影子流量验证;每个生成式 Agent 都内置 <strong>Critic 子模块</strong></div>
+      </div>
+    </div>
+    <div class="principle-annotate">
+      <strong>关于原则 ③ 的产品诠释:</strong> "自验证"不只是单点防错,更核心的是 — Agent <strong>自驱动 perceive→plan→act→reflect 循环 + 自学习提升 → 让专家有计划地退场</strong>。这是 V2.0 能否成立的产品 hypothesis,也是 AI Native 区别于 AI Enabled 的根本承诺。
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="sub-title">1.3 用户价值感知 — 客户能感知到的 6 条承诺</div>
+    <div class="value-grid">
+      <div class="value-card v-teal">
+        <span class="value-num">价值 ①</span>
+        <div class="value-name">意图 in,结果 out</div>
+        <div class="value-desc">客户只表达增长<strong>意图</strong>和边界条件,系统自动解析为可量化目标;不再做画像配置、场景设计、创意审核</div>
+      </div>
+      <div class="value-card v-blue">
+        <span class="value-num">价值 ②</span>
+        <div class="value-name">7×24 自驱动</div>
+        <div class="value-desc">专家不在场也能跑,不退化、不停摆;半夜出现的机会窗口系统能自己接住</div>
+      </div>
+      <div class="value-card v-purple">
+        <span class="value-num">价值 ③</span>
+        <div class="value-name">专家逐步退场</div>
+        <div class="value-desc">客户越用越省心,从"我得审"到"我只看结果"——这是产品有计划的能力曲线</div>
+      </div>
+      <div class="value-card v-amber">
+        <span class="value-num">价值 ④</span>
+        <div class="value-name">冷启动加速 · 经验前置</div>
+        <div class="value-desc">新客户<strong>不必从零开始</strong>——平台已沉淀的同行行业经验(模板 / Persona / 潜客库)直接复用,启动周期从月级压缩到周级</div>
+      </div>
+      <div class="value-card v-blue">
+        <span class="value-num">价值 ⑤</span>
+        <div class="value-name">决策可重放 + 24h 回滚</div>
+        <div class="value-desc">任何决策都能事后还原"当时系统看到了什么";做错了能在 24 小时内一键回滚</div>
+      </div>
+      <div class="value-card v-coral">
+        <span class="value-num">价值 ⑥</span>
+        <div class="value-name">合规可审计</div>
+        <div class="value-desc">不可篡改审计日志,监管面前能解释每一笔触达、每一次决策的依据</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Part 2 · 六层架构 ─── -->
+<section class="part" id="part2">
+  <div class="part-head">
+    <span class="part-num">PART 2</span>
+    <span class="part-title">六层架构 → 产品定位与核心能力</span>
+    <span class="part-sub">每一层都为产品贡献了某种能力</span>
+  </div>
+
+  <div class="layer-row l-teal">
+    <div class="layer-id-name">
+      <span class="layer-id t-teal">L1 · 接入层</span>
+      <span class="layer-name-text">Access Layer</span>
+    </div>
+    <div class="layer-cap">
+      <div class="layer-cap-headline">客户接触面 = "意图 in / 结果 out" + 异常审阅 + 一键回滚</div>
+      <div class="layer-cap-desc">客户与系统交互的唯一入口。客户在这里只做三件事:<strong>表达增长意图</strong>、设置边界条件、查看结果与告警。<strong>把意图细化为可量化目标(OKR)</strong>是 Planner 在编排层做的事,不需要客户自己懂行业基准。客户<strong>不需要</strong>定义画像、设计场景矩阵、配置渠道、审核创意——这些 AI Enabled 范式中的人工动作全部内化为系统能力。<em>对应价值卡片 ① + ⑤</em>。</div>
+    </div>
+    <div class="layer-comps">
+      <span class="layer-comps-label">关键组件</span>
+      <span class="comp-chip">目标解析器</span>
+      <span class="comp-chip">客户仪表盘</span>
+      <span class="comp-chip">API 网关</span>
+    </div>
+  </div>
+
+  <div class="layer-row l-amber">
+    <div class="layer-id-name">
+      <span class="layer-id t-amber">L2 · 编排层</span>
+      <span class="layer-name-text">Orchestration</span>
+    </div>
+    <div class="layer-cap">
+      <div class="layer-cap-headline">"动态规划,新行业不改流程"——Planner 看不同状态做不同 DAG</div>
+      <div class="layer-cap-desc">编排层只有一个 Planner Agent 和一个 Executor,承担传统流水线的全部协调职责。和固定流水线的核心区别:<strong>Planner 根据当前 World Model 状态动态生成 DAG</strong>——新行业不改流程,只是 Planner 看到不同状态做不同的规划。<em>对应价值卡片 ②</em>。</div>
+    </div>
+    <div class="layer-comps">
+      <span class="layer-comps-label">关键组件</span>
+      <span class="comp-chip">Planner Agent</span>
+      <span class="comp-chip">Executor</span>
+      <span class="comp-chip">Event Bus</span>
+    </div>
+  </div>
+
+  <div class="layer-row l-purple">
+    <div class="layer-id-name">
+      <span class="layer-id t-purple">L3 · 智能体层</span>
+      <span class="layer-name-text">Agent Layer</span>
+    </div>
+    <div class="layer-cap">
+      <div class="layer-cap-headline">"12 个自主智能体网状协作,每个 Agent 自带 Critic"</div>
+      <div class="layer-cap-desc">12 个 Agent 按职责分为五类。每个 Agent 都遵循统一接口契约:输入 → Critic 自评 → 输出 + 不确定性 + 可回滚。<strong>协作是网状的而非树状的</strong>——Planner 处于中心调度位,但其他 Agent 可以直接通过 Event Bus 互相通信;Resolver 和 Compliance 横切监督所有执行类 Agent。<em>对应价值卡片 ②③</em>。</div>
+    </div>
+    <div class="layer-comps">
+      <span class="layer-comps-label">关键组件</span>
+      <span class="comp-chip">战略 / 数据 / 用户 / 执行 / 治理 五类 Agent</span>
+    </div>
+  </div>
+
+  <div class="layer-row l-blue">
+    <div class="layer-id-name">
+      <span class="layer-id t-blue">L4 · 世界模型层</span>
+      <span class="layer-name-text">World Model</span>
+    </div>
+    <div class="layer-cap">
+      <div class="layer-cap-headline">"时间旅行 / 一致性快照 / 决策可重放"</div>
+      <div class="layer-cap-desc">World Model 是所有 Agent 共享的"现实"。它<strong>不是数据库,而是事件溯源系统</strong>——所有 Agent 输入都来自某个快照,所有输出都作为事件写回 Event Log。这种架构带来三个能力:回到任意时刻调查 / 避免读到中间态 / 精确还原每次决策时 Agent 看到的世界。<em>对应价值卡片 ⑤</em>。</div>
+    </div>
+    <div class="layer-comps">
+      <span class="layer-comps-label">关键组件</span>
+      <span class="comp-chip">World Model Store</span>
+      <span class="comp-chip">State Snapshot</span>
+      <span class="comp-chip">Identity Graph</span>
+    </div>
+  </div>
+
+  <div class="layer-row l-amber">
+    <div class="layer-id-name">
+      <span class="layer-id t-amber">L5 · 数据资产层</span>
+      <span class="layer-name-text">Data Assets</span>
+    </div>
+    <div class="layer-cap">
+      <div class="layer-cap-headline">"跨客户数据飞轮,平台核心护城河"</div>
+      <div class="layer-cap-desc">六类数据资产协同构成数据飞轮:行业潜客库、客户项目库、脱敏回流标签库、行业模板库、行业知识图谱(支持 GraphRAG)、Persona 池(LLM 合成 + 真实流量校准)、实验沙盒。<strong>客户越多 → 数据越多 → 模板越准 → 新客户冷启动越快</strong>——这是飞轮的底层机制;对客户而言,这意味着<strong>冷启动加速、经验前置</strong>。<em>对应价值卡片 ④</em>。</div>
+    </div>
+    <div class="layer-comps">
+      <span class="layer-comps-label">关键组件</span>
+      <span class="comp-chip">行业潜客库</span>
+      <span class="comp-chip">Persona 池</span>
+      <span class="comp-chip">行业知识图谱</span>
+      <span class="comp-chip">行业模板库</span>
+      <span class="comp-chip">实验沙盒</span>
+      <span class="comp-chip">脱敏回流标签库</span>
+    </div>
+  </div>
+
+  <div class="layer-row l-coral">
+    <div class="layer-id-name">
+      <span class="layer-id t-coral">L6 · 治理层 ⟂</span>
+      <span class="layer-name-text">Governance (横切)</span>
+    </div>
+    <div class="layer-cap">
+      <div class="layer-cap-headline">"自由地跑、严格地控"——Policy-as-Code 让 Agent 自由决策的同时严守红线</div>
+      <div class="layer-cap-desc">传统 RPA 靠人在流程节点审批,V2.0 靠 <strong>Policy + Observability + Kill Switch 三件套</strong>实现"自由地跑、严格地控"。所有治理规则(合规、频控、降级、模板治理、追溯成熟度)写成 Policy-as-Code,由 Policy Engine 在每次 Agent 决策前自动评估。<em>对应价值卡片 ⑥</em>。</div>
+    </div>
+    <div class="layer-comps">
+      <span class="layer-comps-label">关键组件</span>
+      <span class="comp-chip">Policy Engine</span>
+      <span class="comp-chip">Observability</span>
+      <span class="comp-chip">Audit Log</span>
+      <span class="comp-chip">Kill Switch</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Part 3 · 12Agent 协作流程图 ─── -->
+<section class="part" id="part3">
+  <div class="part-head">
+    <span class="part-num">PART 3</span>
+    <span class="part-title">12Agent 协作流程图</span>
+    <span class="part-sub">以"冷启动 1 个 SaaS 客户"为例 · 6 阶段 × 12 Agent 网状协作 + 4 种协作模式</span>
+  </div>
+
+  <div class="agent-demo-wrap">
+    <iframe src="12Agent网络图.html"
+            class="agent-demo-iframe"
+            style="height:1100px;"
+            title="12 Agent 协作流程图"
+            loading="lazy"></iframe>
+    <div class="agent-demo-foot">
+      <span>🔗 协作图:<a href="12Agent网络图.html" target="_blank" rel="noopener">独立打开 12Agent 协作流程图</a></span>
+      <span class="agent-demo-foot-note">顶部 6 阶段按钮可切换查看;点击 Agent 节点查看在该阶段的具体职责</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Part 4 · 12 Agent 互动演示 ─── -->
+<section class="part" id="part4">
+  <div class="part-head">
+    <span class="part-num">PART 4</span>
+    <span class="part-title">12 Agent 互动演示</span>
+    <span class="part-sub">点击带 DEMO 标签的 Agent 卡片进入互动演示 · 已完成 Planner / Audience / Reflection 3 个</span>
+  </div>
+
+  <div class="agent-demo-wrap">
+    <iframe src="agent demo/index.html"
+            class="agent-demo-iframe"
+            title="12 Agent 网络 Demo 入口"
+            loading="lazy"></iframe>
+    <div class="agent-demo-foot">
+      <span>🔗 入口页:<a href="agent demo/index.html" target="_blank" rel="noopener">独立打开 12 Agent Demo Portal</a></span>
+      <span class="agent-demo-foot-note">每个 Agent 演示在独立标签页打开 · 含 Live LLM 调用与 TaxFlow 场景 mock 兜底</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Part 5 · 落地路径与 KPI 体系 ─── -->
+<section class="part" id="part5">
+  <div class="part-head">
+    <span class="part-num">PART 5</span>
+    <span class="part-title">落地路径与 KPI 体系</span>
+    <span class="part-sub">产品落地思路 · 只给 KPI 主轴,不展开 MVP / 阶段 / 资源</span>
+  </div>
+
+  <div class="subsection">
+    <div class="sub-title">5.1 框架命题:V2.0 客户价值兑现地图</div>
+    <div class="dual-axis-card">
+      <div class="dual-axis-quote">
+        <span class="dual-axis-quote-tag">借鉴锚点</span>
+        <span class="dual-axis-quote-text">
+          参考资料 V1.0 docx · 「客户价值兑现地图」+「MVP 实施路径与验收标准」—— 客户视角的 KPI 组织框架,V2.0 范式下重写适配
+        </span>
+      </div>
+      <div class="dual-axis-intro" style="border-bottom:none;margin-bottom:0;padding-bottom:0;">
+        V2.0 是<strong>面向客户的商业化产品</strong>,KPI 体系必须从"客户每个阶段能看到什么具体价值"倒推。本节借鉴 V1.0 参考文档的客户视角框架,V2.0 范式下重写为 <strong>MVP-1 → MVP-5 五阶段</strong>的客户感知交付物地图;并附 <strong>6 条客户视角验收标准</strong>,作为各阶段必须通过的硬性标准。
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="sub-title">5.2 客户价值兑现地图(MVP 阶段化)</div>
+    <table class="cvmap-table">
+      <thead>
+        <tr><th>阶段</th><th>系统完成什么</th><th>客户能看到什么具体价值</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>MVP-1</strong><br>意图对齐</td>
+          <td>Planner Intake 解析「意图对象」+ Initial Plan 反推 OKR(预算 × 时间窗 ÷ 行业基准 CPL)+ L1 仪表盘上线</td>
+          <td>一份<strong>意图 → OKR 解析文件</strong>(含漏斗倒推依据)+ L1 仪表盘可调整目标</td>
+        </tr>
+        <tr>
+          <td><strong>MVP-2</strong><br>影子验证</td>
+          <td>Persona 池预验证 + 1-5% 影子流量观测 + Critic 子模块对生成结果自评</td>
+          <td><strong>Persona 反应报告</strong>(LLM 合成虚拟用户的反应汇总)+ 影子流量 vs 基准的业务效果对比</td>
+        </tr>
+        <tr>
+          <td><strong>MVP-3</strong><br>自驱动试运行</td>
+          <td>主流量执行 · 7×24 自驱动 · 24h 回滚窗口可用 · Event Sourcing 决策可重放</td>
+          <td>7×24 自驱动期间的<strong>业务指标</strong>(线索/SQL/转化)+ 任意时刻<strong>决策回放</strong>报告</td>
+        </tr>
+        <tr>
+          <td><strong>MVP-4</strong><br>飞轮启动</td>
+          <td>跨客户经验调用(行业模板库 / 同行 Persona / 行业潜客库 D0→D2 渐进)</td>
+          <td><strong>冷启动周期缩短证据</strong>(月 → 周)+ 跨客户经验贡献回溯报告</td>
+        </tr>
+        <tr>
+          <td><strong>MVP-5</strong><br>专家退场</td>
+          <td>全自驱动稳态 + 销售证据包闭环 + 叠加贡献追溯自动化</td>
+          <td><strong>「专家介入率下降 vs 业务效果不衰减」双指标</strong> + 销售证据包(每条 AI 触达)+ 增长复利追溯</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="acceptance-block">
+      <div class="acceptance-title">
+        <span class="acceptance-title-tag">客户视角验收</span>
+        <span>6 条 V2.0 必须通过的客户视角标准</span>
+      </div>
+      <ol class="acceptance-list">
+        <li><strong>客户早期可见价值</strong> —— MVP-1 即看到 OKR 反推 + 仪表盘</li>
+        <li><strong>销售愿意采纳</strong> —— 每条 AI 触达带证据包 + 反馈入口</li>
+        <li><strong>增长结果可追溯</strong> —— 有效线索回溯到定位 / 场景 / 信号</li>
+        <li><strong>人工缺席可降级</strong> —— 关键审批缺失时保守运行,不失控放大</li>
+        <li><strong>评分不是黑盒</strong> —— timing_score 有版本 / 探索流量 / 回滚机制</li>
+        <li><strong>场景假设可验证</strong> —— P0 场景至少一项 Persona + 影子流量证据</li>
+      </ol>
+    </div>
+  </div>
+
+</section>
+
+<!-- ─── Part 6 · 核心命题与挑战 ─── -->
+<section class="part" id="part6">
+  <div class="part-head">
+    <span class="part-num">PART 6</span>
+    <span class="part-title">核心命题与挑战</span>
+    <span class="part-sub">不展开 MVP,但抛出问题 + 给应对建议</span>
+  </div>
+
+  <div class="subsection">
+    <div class="sub-title">6.1 核心命题:自驱动学习的产品 hypothesis</div>
+    <div class="hypothesis-card">
+      <div class="hypothesis-statement">
+        <strong>Agent 自学习提升 + 专家有计划退场</strong> = V2.0 产品价值的核心断言。
+      </div>
+      <div class="hypothesis-clarify">
+        这<strong>不是难题,而是 V2.0 能否成立的产品 hypothesis 本身</strong>。命题成立与否,直接决定 V2.0 是 AI Native 还是退化为 AI Enabled。
+      </div>
+      <div class="hypothesis-resolution">
+        <span class="hypothesis-label">应对方向</span>
+        <span>用 <strong>Part 5「客户价值兑现地图」</strong>MVP-1 → MVP-5 各阶段交付物的持续兑现,作为 hypothesis 成立的客户感知凭证;Reflection 学习闭环输出 A/B 验证后上线;Persona 池 + 影子流量做小流量预验证(对应 docx 原文「自学习沉淀」机制)。</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="sub-title">6.2 实施挑战与应对建议</div>
+    <div class="issues-intro">
+      除核心命题外,V2.0 落地中还存在几类<strong>固有挑战</strong>。这些不是 V2.0 的"缺陷",而是 AI Native 范式必须正面应对的边界条件;docx 已为大部分给出应对机制,此处汇总以便老板 review。
+    </div>
+    <table class="issues-table">
+      <thead>
+        <tr><th style="width:5%;">#</th><th style="width:24%;">挑战</th><th style="width:32%;">简述</th><th>我们的应对建议</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td><span class="issues-name yellow">🟡 冷启动悖论</span></td>
+          <td>Agent 自学习靠数据沉淀;冷启动期没有数据,必然要专家先行</td>
+          <td class="issues-resolution">早期专家定义"模板候选"做 baseline;Persona 池替代访谈样本;行业库 D0→D2 渐进;接受"早期一定有专家成本"的事实</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><span class="issues-name yellow">🟡 学习闭环失效风险</span></td>
+          <td>Reflection 自动归因 / 权重学习如果失效,V2.0 命题破产</td>
+          <td class="issues-resolution">学习闭环带来的指标提升做明确量化;Reflection 输出 A/B 验证后才上线</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><span class="issues-name yellow">🟡 LLM 幻觉</span></td>
+          <td>产品 / 价格 / 承诺类幻觉直接影响客户体验</td>
+          <td class="issues-resolution">Critic 子模块 + Persona 预验证 + 24h 回滚窗口 + Kill Switch(docx 6.5 已规定)</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td><span class="issues-name yellow">🟡 合规与回流污染</span></td>
+          <td>数据回流到平台库可能跨客户污染;GDPR / PIPL 合规</td>
+          <td class="issues-resolution">Compliance 三层规则 + 不可篡改审计日志 + 灰度沉淀 + 模板版本回滚</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+</div>
+
+<div class="footer">
+  V2.0 产品方案方向对齐与校正 v0.1 · PM Team · 2026-05-09
+</div>
+
+<script>
+// smooth scroll for all anchor links (header nav + side nav)
+document.querySelectorAll('.hdr-nav a, .side-nav a').forEach(a => {
+  a.addEventListener('click', e => {
+    const href = a.getAttribute('href');
+    if(href.startsWith('#')){
+      e.preventDefault();
+      const target = document.querySelector(href);
+      if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  });
+});
+
+// Side nav · highlight current chapter while scrolling
+const sideNavLinks = document.querySelectorAll('.side-nav a');
+const partSections = document.querySelectorAll('section.part');
+function updateSideNavActive(){
+  const scrollPos = window.scrollY + 120;
+  let activeId = partSections[0] ? partSections[0].id : null;
+  partSections.forEach(sec => { if(sec.offsetTop <= scrollPos) activeId = sec.id; });
+  sideNavLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + activeId);
+  });
+}
+window.addEventListener('scroll', updateSideNavActive, {passive:true});
+window.addEventListener('resize', updateSideNavActive, {passive:true});
+updateSideNavActive();
+</script>
+
+</body>
+</html>
