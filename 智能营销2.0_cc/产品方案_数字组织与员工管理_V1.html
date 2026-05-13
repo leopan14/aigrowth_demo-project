@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>AI 原生精准增长系统 V2.0 · 产品方案</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.6;
+  color: #1a1a1a;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 30px;
+  background: #f5f5f7;
+}
+.slide {
+  background: white;
+  border-radius: 12px;
+  padding: 40px 50px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  page-break-after: always;
+}
+.slide-num {
+  display: inline-block;
+  background: #1d4ed8;
+  color: white;
+  padding: 4px 14px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+h1 {
+  font-size: 28px;
+  margin: 0 0 8px;
+  color: #1a1a1a;
+  border-bottom: 3px solid #1d4ed8;
+  padding-bottom: 12px;
+}
+h2 {
+  font-size: 20px;
+  margin: 28px 0 12px;
+  color: #1d4ed8;
+}
+h3 {
+  font-size: 16px;
+  margin: 20px 0 8px;
+  color: #334155;
+}
+.subtitle {
+  color: #64748b;
+  font-size: 14px;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0 20px;
+  font-size: 13px;
+}
+th {
+  background: #1d4ed8;
+  color: white;
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+}
+td {
+  padding: 9px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: top;
+}
+tr:nth-child(even) td { background: #f9fafb; }
+tr:hover td { background: #eff6ff; }
+pre {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 18px 22px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 12px;
+  line-height: 1.5;
+  font-family: "SF Mono", Monaco, Consolas, monospace;
+}
+.code-conduct {
+  background: #fef2f2;
+  border-left: 4px solid #dc2626;
+  padding: 10px 16px;
+  margin: 12px 0;
+  border-radius: 4px;
+  font-size: 13px;
+}
+.charter {
+  background: #eff6ff;
+  border-left: 4px solid #1d4ed8;
+  padding: 10px 16px;
+  margin: 12px 0;
+  border-radius: 4px;
+  font-style: italic;
+  color: #1e3a8a;
+}
+.dept-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-right: 6px;
+}
+.b1 { background: #ddd6fe; color: #5b21b6; }
+.b2 { background: #fce7f3; color: #9d174d; }
+.b3 { background: #fed7aa; color: #9a3412; }
+.b4 { background: #fecaca; color: #991b1b; }
+.b5 { background: #d1fae5; color: #065f46; }
+.org-chart {
+  text-align: center;
+  font-family: "SF Mono", Monaco, monospace;
+  font-size: 12px;
+  background: #f8fafc;
+  padding: 24px;
+  border-radius: 8px;
+  margin: 16px 0;
+  line-height: 1.8;
+}
+.layer-block {
+  display: flex;
+  align-items: center;
+  padding: 12px 18px;
+  margin: 6px 0;
+  border-radius: 6px;
+  border-left: 6px solid;
+}
+.layer-label {
+  font-weight: 700;
+  width: 90px;
+  font-size: 14px;
+}
+.layer-name {
+  width: 130px;
+  color: #475569;
+  font-size: 13px;
+}
+.layer-detail {
+  flex: 1;
+  font-size: 13px;
+}
+.l1 { background: #eff6ff; border-color: #2563eb; }
+.l2 { background: #f0fdf4; border-color: #16a34a; }
+.l3 { background: #fef3c7; border-color: #ca8a04; }
+.l4 { background: #fae8ff; border-color: #c026d3; }
+.l5 { background: #fce7f3; border-color: #db2777; }
+.l6 { background: #fee2e2; border-color: #dc2626; }
+</style>
+</head>
+<body>
+
+<div class="slide">
+<span class="slide-num">SLIDE 1 / 10</span>
+<h1>六层架构（L1–L6）</h1>
+<p class="subtitle">出处：§2.1 架构总览</p>
+
+<div class="layer-block l1">
+  <div class="layer-label">L1</div>
+  <div class="layer-name">接入层 Access</div>
+  <div class="layer-detail">客户唯一入口 · 目标 in / 仪表盘 out / 边界 / 升级审阅 · 目标解析器 · 仪表盘 · API 网关</div>
+</div>
+<div class="layer-block l2">
+  <div class="layer-label">L2</div>
+  <div class="layer-name">编排层 Orchestration</div>
+  <div class="layer-detail">唯一指挥官 · 目标拆解 · 动态规划 · Agent 调度 · Planner · Executor · Event Bus</div>
+</div>
+<div class="layer-block l3">
+  <div class="layer-label">L3</div>
+  <div class="layer-name">智能体层 Agent</div>
+  <div class="layer-detail"><strong>数字员工 · 12 团队 · 48 数字员工 · 4 层级</strong> · 战略 / 用户 / 执行 / 治理 / 数据</div>
+</div>
+<div class="layer-block l4">
+  <div class="layer-label">L4</div>
+  <div class="layer-name">世界模型 World Model</div>
+  <div class="layer-detail">共享认知 · 实时业务状态 · 决策快照 · World Model Store · State Snapshot · Identity Graph</div>
+</div>
+<div class="layer-block l5">
+  <div class="layer-label">L5</div>
+  <div class="layer-name">数据资产 Data Asset</div>
+  <div class="layer-detail">长期记忆 / 护城河 · 行业潜客库 · 知识图谱 · Persona 池 · 实验沙盒</div>
+</div>
+<div class="layer-block l6">
+  <div class="layer-label">L6</div>
+  <div class="layer-name">治理层 Governance</div>
+  <div class="layer-detail">免疫系统 · Policy-as-Code · 可观测性 · 合规审计 · 熔断回滚 · Kill Switch</div>
+</div>
+</div>
+
+<div class="slide">
+<span class="slide-num">SLIDE 2 / 10</span>
+<h1>数字组织总览 · 48 数字员工 · 4 层级</h1>
+<p class="subtitle">外企管理范式：每个团队 = 1 Director + 1 Senior + 1 Specialist + 1 QA</p>
+
+<div class="org-chart">
+AI 增长公司 · 12 团队 · 48 员工<br><br>
+<span class="dept-badge b1">战略部 (12)</span>
+<span class="dept-badge b2">用户部 (8)</span>
+<span class="dept-badge b3">执行部 (12)</span>
+<span class="dept-badge b4">治理部 (12)</span>
+<span class="dept-badge b5">数据部 (4)</span>
+<br><br>
+Planner · Diagnosis · Positioning · Audience · Signal<br>
+Creative · Orchestration · Sales · Resolver · Compliance · Reflection · Knowledge
+</div>
+
+<h2>统一 4 层员工模型（对应 §3.5 Agent 生命周期）</h2>
+<table>
+<tr><th>层级</th><th>English Title</th><th>中文岗位</th><th>职责映射</th><th>原文生命周期</th></tr>
+<tr><td><strong>L1</strong></td><td>Director / Head</td><td>总监 / 团队 Lead</td><td>决策、对外签字、申报升级</td><td>Perceive + Escalate</td></tr>
+<tr><td><strong>L2</strong></td><td>Senior Expert</td><td>资深专家</td><td>复杂场景判断、调取经验库</td><td>Plan (复杂分支) + Reflect</td></tr>
+<tr><td><strong>L3</strong></td><td>Specialist</td><td>执行专员</td><td>标准任务批量执行</td><td>Act</td></tr>
+<tr><td><strong>L4</strong></td><td>QA Reviewer</td><td>质量审核员</td><td>上线前自检、Critic 闸门</td><td>Critic</td></tr>
+</table>
+<p class="subtitle">工程映射：每位员工 = 一条独立 LLM 调用链 + 专属 prompt + 专属工具集；同 Agent 内部 4 员工串行流水，由 Director 总签字</p>
+</div>
+
+<div class="slide">
+<span class="slide-num">SLIDE 3 / 10</span>
+<h1>战略部 · 12 数字员工</h1>
+<div class="charter">部门 Charter：看方向、定打法。</div>
+
+<h2>Team 1 · Planner Agent · Chief of Staff Office</h2>
+<table>
+<tr><th>层级</th><th>Title</th><th>中文岗位</th><th>关键职责</th><th>KPI</th></tr>
+<tr><td>L1 Director</td><td><strong>Chief of Staff</strong></td><td>总指挥官</td><td>接收客户目标 / 签发 DAG / 异常裁决 / 客户对接</td><td>Plan 成功率</td></tr>
+<tr><td>L2 Senior</td><td>Senior Strategy Planner</td><td>资深规划师</td><td>复杂目标拆解 / 重规划 / 模式切换</td><td>Plan 修订次数</td></tr>
+<tr><td>L3 Specialist</td><td>Dispatch Operator</td><td>调度专员</td><td>DAG 翻译 / 进度监控 / 回执汇总</td><td>规划-执行延迟</td></tr>
+<tr><td>L4 QA</td><td>Plan Reviewer</td><td>规划审核员</td><td>覆盖度 / 依赖 / 成本 / 风险 / 合规 5 道 Critic</td><td>升级率</td></tr>
+</table>
+
+<h2>Team 2 · Diagnosis Agent · Business Health Audit Office</h2>
+<table>
+<tr><th>层级</th><th>Title</th><th>中文岗位</th><th>关键职责</th><th>KPI</th></tr>
+<tr><td>L1 Director</td><td><strong>Chief Diagnosis Officer</strong></td><td>首席诊断官</td><td>出具诊断书 / 阶段判定签字 / 能力清单授权</td><td>诊断准确率</td></tr>
+<tr><td>L2 Senior</td><td>Senior Industry Benchmark Analyst</td><td>资深行业基准分析师</td><td>对接 Knowledge / 识别瓶颈 / 行业基准对比</td><td>误诊率</td></tr>
+<tr><td>L3 Specialist</td><td>Data Profiler</td><td>数据探查员</td><td>扫描 CRM/广告/官网/ERP / 标签提取</td><td>诊断时长</td></tr>
+<tr><td>L4 QA</td><td>Diagnosis Reviewer</td><td>诊断复核员</td><td>置信度校验 / 与基准冲突检测 / 完整度审查</td><td>复核通过率</td></tr>
+</table>
+
+<h2>Team 3 · Positioning Agent · Strategy Advisory Office</h2>
+<table>
+<tr><th>层级</th><th>Title</th><th>中文岗位</th><th>关键职责</th><th>KPI</th></tr>
+<tr><td>L1 Director</td><td><strong>Head of Positioning</strong></td><td>定位总监</td><td>主定位 + 辅助定位决策 / 回滚审批</td><td>30 天指标提升</td></tr>
+<tr><td>L2 Senior</td><td>Senior Brand Strategist</td><td>资深品牌战略师</td><td>多策略生成 / Persona 反应矩阵分析 / 影子流量解读</td><td>回滚率</td></tr>
+<tr><td>L3 Specialist</td><td>Copy Generator</td><td>文案生成员</td><td>Slogan / 价值主张 / 差异化批量产出</td><td>生成产量</td></tr>
+<tr><td>L4 QA</td><td>Positioning Critic</td><td>定位审核员</td><td>一致性 / 差异化 / 可证明性 / 合规 / Persona 5 道 Critic</td><td>Persona-真实相关性</td></tr>
+</table>
+
+<div class="code-conduct">🚫 <strong>战略部 Code of Conduct</strong>：定位不参与自动学习（§6.2.2）</div>
+</div>
+
+<div class="slide">
+<span class="slide-num">SLIDE 4 / 10</span>
+<h1>用户部 · 8 数字员工</h1>
+<div class="charter">部门 Charter：知道谁是用户、什么时候有需求。</div>
+
+<h2>Team 4 · Audience Agent · User Research Office</h2>
+<table>
+<tr><th>层级</th><th>Title</th><th>中文岗位</th><th>关键职责</th><th>KPI</th></tr>
+<tr><td>L1 Director</td><td><strong>Head of User Research</strong></td><td>用户研究总监</td><td>用户定义卡签发 / D0 准入清单审批</td><td>场景验证通过率</td></tr>
+<tr><td>L2 Senior</td><td>Senior User Behavior Analyst</td><td>资深用户行为分析师</td><td>用户反推 / 决策角色识别 / A/B/AB 路径标注</td><td>L0 与 L2 一致率</td></tr>
+<tr><td>L3 Specialist</td><td>Persona Validator</td><td>Persona 验证员</td><td>在 200–500 Persona 上批量跑反应模拟</td><td>L0 验证周期</td></tr>
+<tr><td>L4 QA</td><td>Scenario Critic</td><td>场景审核员</td><td>反推一致性 / 场景具体性 / 可识别性 / Persona 阈值</td><td>误推率</td></tr>
+</table>
+
+<h2>Team 5 · Signal Agent · Signal Intelligence Office</h2>
+<table>
+<tr><th>层级</th><th>Title</th><th>中文岗位</th><th>关键职责</th><th>KPI</th></tr>
+<tr><td>L1 Director</td><td><strong>Head of Signal Intelligence</strong></td><td>信号情报总监</td><td>信号源 A/B/C/D 分级签字 / B 类事件触发裁决</td><td>信号→线索转化率</td></tr>
+<tr><td>L2 Senior</td><td>Senior Signal Analyst</td><td>资深信号分析师</td><td>8 维评估 / 状态机管理 / timing_score 计算</td><td>timing_score 准确率</td></tr>
+<tr><td>L3 Specialist</td><td>Crawler Operator</td><td>数据采集员</td><td>外部监听管道运营 / 实体链接 / 清洗去重</td><td>信号源覆盖率</td></tr>
+<tr><td>L4 QA</td><td>Signal Quality Reviewer</td><td>信号质量审核员</td><td>稳定性 / 误报率 / 漏报回测 / 置信度校准</td><td>漏报率</td></tr>
+</table>
+</div>
+
+<div class="slide">
+<span class="slide-num">SLIDE 5 / 10</span>
+<h1>执行部 · 12 数字员工</h1>
+<div class="charter">部门 Charter：把策略变内容、把内容变触达、把触达变对话。</div>
+
+<h2>Team 6 · Creative Agent · Creative Studio</h2>
+<table>
+<tr><th>层级</th><th>Title</th><th>中文岗位</th><th>关键职责</th><th>KPI</th></tr>
+<tr><td>L1 Director</td><td><strong>Creative Director</strong></td><td>创意总监</td><td>Top 变体决策 / 品牌敏感场景签字</td><td>CTR / 转化率</td></tr>
+<tr><td>L2 Senior</td><td>Senior Copywriter & Art Director</td><td>资深文案 + 美术</td><td>6 角度切换（场景/损失/效率/风险/差异化/案例）</td><td>Persona 预测相关性</td></tr>
+<tr><td>L3 Specialist</td><td>Junior Creator</td><td>初级创作员</td><td>邮件 / 落地页 / 广告 / 短视频脚本 / 企微话术批量产出</td><td>创意生产周期</td></tr>
+<tr><td>L4 QA</td><td>Brand & Compliance Reviewer</td><td>品牌合规审核员</td><td>品牌一致性 / 广告法 / Persona 反应预测 / 跨内容去重</td><td>合规拦截率</td></tr>
+</table>
+
+<h2>Team 7 · Orchestration Agent · Channel Operations Center</h2>
+<table>
+<tr><th>层级</th><th>Title</th><th>中文岗位</th><th>关键职责</th><th>KPI</th></tr>
+<tr><td>L1 Director</td><td><strong>Head of Channel Ops</strong></td><td>渠道运营总监</td><td>touch_orchestration_plan 签发 / 放大决策</td><td>CPL</td></tr>
+<tr><td>L2 Senior</td><td>Senior Media Planner</td><td>资深媒介策划</td><td>人群×渠道×内容×时机组合优化 / 预算多臂分配</td><td>放大正确率</td></tr>
+<tr><td>L3 Specialist</td><td>Campaign Operator</td><td>投放操作员</td><td>执行队列调度 / 实时监控 / 停损执行</td><td>停损及时性</td></tr>
+<tr><td>L4 QA</td><td>Task Assembly Reviewer</td><td>任务装配审核员</td><td>装配一致性 / 预算 / 承接容量 / 停损覆盖</td><td>任务通过率</td></tr>
+</table>
+
+<h2>Team 8 · Sales Agent · Sales Frontline</h2>
+<table>
+<tr><th>层级</th><th>Title</th><th>中文岗位</th><th>关键职责</th><th>KPI</th></tr>
+<tr><td>L1 Director</td><td><strong>Head of Sales</strong></td><td>销售总监</td><td>升级决策 / 高价值线索分配 / 客户偏好维护</td><td>MQL→SQL 转化率</td></tr>
+<tr><td>L2 Senior</td><td>Senior Sales</td><td>资深销售</td><td>异议处理（价格/竞品/时机/决策权/信任）/ 复杂客户接管</td><td>升级准确率</td></tr>
+<tr><td>L3 Specialist</td><td>SDR / BDR</td><td>销售开发代表</td><td>首次接触 / 答疑 / 预约 / 状态机 S0–S5 推进</td><td>接管率</td></tr>
+<tr><td>L4 QA</td><td>Conversation Reviewer</td><td>对话审核员</td><td>回复 Critic / RAG 命中检查 / 情绪偏离 / 反幻觉护栏</td><td>客户体感满意度</td></tr>
+</table>
+</div>
+
+<div class="slide">
+<span class="slide-num">SLIDE 6 / 10</span>
+<h1>治理部 · 12 数字员工</h1>
+<div class="charter">部门 Charter：把红线、控冲突、做复盘。所有执行类员工的产出都必须经过治理部。</div>
+
+<h2>Team 9 · Resolver Agent · Operations Control Center</h2>
+<table>
+<tr><th>层级</th><th>Title</th><th>中文岗位</th><th>关键职责</th><th>KPI</th></tr>
+<tr><td>L1 Director</td><td><strong>Head of Operations Control</strong></td><td>运营控制总监</td><td>10 种动作决策签字 / 规则冲突最终裁决</td><td>误拦率</td></tr>
+<tr><td>L2 Senior</td><td>Senior Rules Engineer</td><td>资深规则工程师</td><td>P0–P7 优先级矩阵维护 / LLM 软规则边界判断</td><td>漏拦率</td></tr>
+<tr><td>L3 Specialist</td><td>Pre-execution Auditor</td><td>执行前审计员</td><td>10 步检查批量跑 / 状态版本对齐</td><td>决策延迟 (ms)</td></tr>
+<tr><td>L4 QA</td><td>Decision Trace Reviewer</td><td>决策追溯审核员</td><td>抽样反向校验 / 规则冲突检测 / 决策可重放</td><td>规则覆盖度</td></tr>
+</table>
+
+<h2>Team 10 · Compliance Agent · Compliance Office</h2>
+<table>
+<tr><th>层级</th><th>Title</th><th>中文岗位</th><th>关键职责</th><th>KPI</th></tr>
+<tr><td>L1 Director</td><td><strong>Chief Compliance Officer</strong></td><td>首席合规官</td><td>Pass/Block/Conditional 最终签字 / 监管报告</td><td>合规事件数</td></tr>
+<tr><td>L2 Senior</td><td>Senior Legal Counsel</td><td>资深法务</td><td>L2 软规则判断（GDPR/CCPA/PIPL/广告法）/ 法规库更新</td><td>法规落地时长</td></tr>
+<tr><td>L3 Specialist</td><td>Compliance Operator</td><td>合规执行员</td><td>L1 硬规则批量跑 / 退订/黑名单/双重 opt-in 校验</td><td>决策延迟</td></tr>
+<tr><td>L4 QA</td><td>Audit Trail Reviewer</td><td>审计日志审核员</td><td>Append-only ledger 一致性 / 同类案例稳定性</td><td>误拦+漏拦率</td></tr>
+</table>
+<div class="code-conduct">🚫 <strong>Code of Conduct</strong>：合规规则不参与自动学习（§6.2.2）</div>
+
+<h2>Team 11 · Reflection Agent · Performance Review Office</h2>
+<table>
+<tr><th>层级</th><th>Title</th><th>中文岗位</th><th>关键职责</th><th>KPI</th></tr>
+<tr><td>L1 Director</td><td><strong>Chief of Strategy & HR</strong></td><td>首席战略与人事官</td><td>权重更新签字 / 月度报告 / 模板候选提名</td><td>归因准确率</td></tr>
+<tr><td>L2 Senior</td><td>Senior Attribution Analyst</td><td>资深归因分析师</td><td>多维归因 / 因果推断 / T0–T4 追溯成熟度</td><td>异常告警命中率</td></tr>
+<tr><td>L3 Specialist</td><td>Weight Update Operator</td><td>权重更新执行员</td><td>Bandit / Bayesian 自动更新 / 探索流量配额维护</td><td>权重提升幅度</td></tr>
+<tr><td>L4 QA</td><td>Weight Governance Reviewer</td><td>权重治理审核员</td><td>样本量 / 锁定期 / 修改幅度 / 防自证循环</td><td>治理违规拦截</td></tr>
+</table>
+<div class="code-conduct">🚫 <strong>Code of Conduct</strong>：不学习定位 / 合规 / 品牌底线；探索流量 10–20% + 随机保留 5–10% 不可压缩（§6.2.1–6.2.2）</div>
+</div>
+
+<div class="slide">
+<span class="slide-num">SLIDE 7 / 10</span>
+<h1>数据部 · 4 数字员工</h1>
+<div class="charter">部门 Charter：沉淀资产、供应弹药。所有员工的"弹药库"。</div>
+
+<h2>Team 12 · Knowledge Agent · Knowledge & Library</h2>
+<table>
+<tr><th>层级</th><th>Title</th><th>中文岗位</th><th>关键职责</th><th>KPI</th></tr>
+<tr><td>L1 Director</td><td><strong>Chief Librarian</strong></td><td>首席图书馆员</td><td>五大资产签字 / Q1–Q4 分级 / D0–D4 成熟度判定</td><td>模板复用率</td></tr>
+<tr><td>L2 Senior</td><td>Senior Industry Researcher</td><td>资深行业研究员</td><td>行业知识图谱构建 / Persona 池合成与校准 / 模板灰度发布</td><td>D0→D2 提升速度</td></tr>
+<tr><td>L3 Specialist</td><td>Data Engineer & Graph Builder</td><td>数据工程+图谱构建员</td><td>数据采集 / NER / 实体链接 / 时序更新</td><td>数据质量</td></tr>
+<tr><td>L4 QA</td><td>Template Quality Reviewer</td><td>模板质量审核员</td><td>图谱一致性 / Persona 覆盖度 / 模板有效性 / 数据质量</td><td>模板灰度通过率</td></tr>
+</table>
+
+<h2>五大数据资产（Knowledge Agent 管理）</h2>
+<table>
+<tr><th>资产</th><th>构成</th><th>服务对象</th></tr>
+<tr><td>行业知识图谱</td><td>实体（企业/角色/产品）、关系、事件、规则</td><td>Audience、Signal、Sales 等所有 Agent</td></tr>
+<tr><td>Persona 池</td><td>LLM 合成的 200–500 个目标行业 Persona</td><td>Positioning、Audience、Creative 的预验证</td></tr>
+<tr><td>平台行业潜客库</td><td>行业 / 企业 / 角色 / 渠道分层</td><td>Audience、Orchestration 调用</td></tr>
+<tr><td>行业模板库</td><td>场景模板、信号模板、内容模板、渠道组合模板</td><td>所有执行类 Agent</td></tr>
+<tr><td>脱敏回流标签库</td><td>跨客户冷启动加速；新增 Agent 决策模式回流</td><td>所有 Agent</td></tr>
+</table>
+</div>
+
+<div class="slide">
+<span class="slide-num">SLIDE 8 / 10</span>
+<h1>员工管理体系 · HR 8 大模块</h1>
+<p class="subtitle">外企 HR 范式 → 本系统映射</p>
+
+<table>
+<tr><th>HR 模块</th><th>外企对应工具</th><th>本系统对应机制</th><th>原文出处</th></tr>
+<tr><td>① Hiring 招聘上线</td><td>Job Posting + Interview</td><td>新 Agent 上线 = Prompt + Tools + RAG + Critic</td><td>§5.x.7</td></tr>
+<tr><td>② Onboarding 入职培训</td><td>Buddy Program + 30/60/90</td><td>Shadow Traffic + Persona 池预验证</td><td>§4.3</td></tr>
+<tr><td>③ Performance 绩效管理</td><td>OKR + Quarterly Review</td><td>KPI Top 4 + Reflection 月度报告</td><td>§5.x.8</td></tr>
+<tr><td>④ Training 培训发展</td><td>LMS / Internal Academy</td><td>Fine-tune + RAG 更新 + 模板学习</td><td>§6.2</td></tr>
+<tr><td>⑤ Promotion 晋升通道</td><td>Career Ladder</td><td>L4→L3→L2→L1 能力进阶</td><td>§6.2</td></tr>
+<tr><td>⑥ Compensation 成本管理</td><td>Total Reward</td><td>Token 预算 + 模型分级（小任务用小模型）</td><td>§5.1.5</td></tr>
+<tr><td>⑦ Code of Conduct 行为规范</td><td>Employee Handbook</td><td>Policy-as-Code + 不学习清单</td><td>§6.2.2 / §6.3</td></tr>
+<tr><td>⑧ Termination 退役解雇</td><td>Severance + Exit Interview</td><td>Persona 退役 / 模板回滚 / Kill Switch</td><td>§6.5</td></tr>
+</table>
+</div>
+
+<div class="slide">
+<span class="slide-num">SLIDE 9 / 10</span>
+<h1>绩效考核与晋升通道</h1>
+
+<h2>9.1 三级绩效评审（外企 Performance Cycle）</h2>
+<table>
+<tr><th>评审</th><th>周期</th><th>评审人</th><th>评审内容</th><th>出处</th></tr>
+<tr><td>Daily Standup</td><td>每次决策</td><td>同 Agent 内 QA Reviewer</td><td>Critic 自检（5 道）</td><td>§3.5</td></tr>
+<tr><td>Monthly Review</td><td>每月</td><td>Reflection Agent</td><td>KPI 达成 + 权重更新 + 异常诊断</td><td>§5.11</td></tr>
+<tr><td>Quarterly Audit</td><td>每季</td><td>Compliance + 客户</td><td>合规事件 + 客户回滚率 + 监管报告</td><td>§5.10</td></tr>
+</table>
+
+<h2>9.2 晋升通道（Career Ladder）</h2>
+<pre>L4 QA Reviewer  →  L3 Specialist  →  L2 Senior Expert  →  L1 Director
+(Critic 微模型)     (标准任务执行)     (复杂场景判断)        (决策签字)
+
+晋升条件 ↑          晋升条件 ↑          晋升条件 ↑           晋升条件 ↑
+通过 10K+ 样本审核   连续 N 周 KPI 达标   模板候选被 Knowledge   被 Reflection 评为
+误拦/漏拦率达标      升级率低于阈值        入库 / 协作好评率高     最高贡献
+= 模型从小→中        = Prompt 升级 + RAG  = 升级到长上下文模型    = 接管对外签字权</pre>
+
+<p style="background:#fef3c7;padding:10px 16px;border-radius:6px;font-size:14px;">
+<strong>晋升 = 模型升级 + Prompt 升级 + 工具栈扩展 + 签字权扩大</strong>
+</p>
+
+<h2>9.3 部门 KPI 矩阵</h2>
+<table>
+<tr><th>部门</th><th>部门 KPI（汇总到 Director）</th></tr>
+<tr><td><span class="dept-badge b1">战略部</span></td><td>Plan 成功率 · 诊断准确率 · 定位 30 天提升 · 回滚率</td></tr>
+<tr><td><span class="dept-badge b2">用户部</span></td><td>场景验证通过率 · 信号→线索转化率 · timing 准确率 · Persona 相关性</td></tr>
+<tr><td><span class="dept-badge b3">执行部</span></td><td>CTR/CPL/MQL→SQL · 创意生产周期 · 停损及时性 · 接管率</td></tr>
+<tr><td><span class="dept-badge b4">治理部</span></td><td>决策延迟 · 误拦/漏拦率 · 归因准确率 · 合规事件数</td></tr>
+<tr><td><span class="dept-badge b5">数据部</span></td><td>D0→D2 时间 · 模板复用率 · Persona 池预测准确率</td></tr>
+</table>
+</div>
+
+<div class="slide">
+<span class="slide-num">SLIDE 10 / 10</span>
+<h1>行为规范 · 退役机制 · 申诉路径</h1>
+
+<h2>10.1 Code of Conduct（员工手册）· 全员红线</h2>
+<table>
+<tr><th>红线</th><th>触发后果</th><th>出处</th></tr>
+<tr><td>跨过 Compliance 直接触达</td><td>Kill Switch 立即熔断</td><td>§5.10</td></tr>
+<tr><td>跨过 Resolver 直接执行</td><td>任务作废 + 决策追溯</td><td>§5.9</td></tr>
+<tr><td>未经 Critic 上线 AI 生成内容</td><td>24h 回滚 + 重审</td><td>§3.5</td></tr>
+<tr><td>学习"定位 / 合规 / 品牌底线"</td><td>权重提案被 Reviewer 拒绝</td><td>§6.2.2</td></tr>
+<tr><td>压缩探索流量 &lt; 10%</td><td>Reflection 拒绝权重更新</td><td>§6.2.1</td></tr>
+</table>
+
+<h2>10.2 申诉与升级路径（Escalation Ladder）</h2>
+<pre>员工自检失败 → QA Reviewer 复审 → 同部门 Director 裁决 →
+↓ (Director 仍无法决策)
+Resolver 跨部门裁决 → Compliance 合规裁决 →
+↓ (跨 Agent 死锁 / 红线触发)
+Planner 项目级决策 →
+↓ (项目级失败)
+⚠️ 升级到人类（客户成功 / 合规负责人 / 行业研究负责人）</pre>
+
+<h2>10.3 退役机制（Termination Protocol）</h2>
+<table>
+<tr><th>退役类型</th><th>触发条件</th><th>处理方式</th><th>原文</th></tr>
+<tr><td>Persona 退役</td><td>与真实反应严重偏差</td><td>自动退役并替换</td><td>§5.12.4 / §6.1.2</td></tr>
+<tr><td>模板退役</td><td>灰度期表现低于阈值</td><td>回滚到上一版本</td><td>§5.12.4</td></tr>
+<tr><td>Agent 临时停职</td><td>Kill Switch 触发</td><td>单 Agent 熔断 + 人审</td><td>§2.2 L6 / §6.5</td></tr>
+<tr><td>项目级解散</td><td>重大合规事故 / 客户终止</td><td>全员暂停 + 审计 + 24h 回滚</td><td>§6.5</td></tr>
+<tr><td>数据回滚</td><td>客户按回滚键</td><td>切回上一 weight_version</td><td>§5.11.6</td></tr>
+</table>
+
+<h2>10.4 风险与管理对策</h2>
+<table>
+<tr><th>风险</th><th>管理对策</th><th>出处</th></tr>
+<tr><td>LLM 幻觉错伤</td><td>Critic + Persona + 24h 回滚 + Kill Switch</td><td>§6.5</td></tr>
+<tr><td>合规事故</td><td>Policy-as-Code 三层 + 不可篡改审计</td><td>§5.10</td></tr>
+<tr><td>Sales 误判</td><td>8 条升级触发 + 情绪监控 + 客户喊真人</td><td>§5.8.5</td></tr>
+<tr><td>成本失控</td><td>模型分级 + Planner 成本 Critic</td><td>§5.1.5</td></tr>
+<tr><td>跨客户回流污染</td><td>严格脱敏 + 灰度沉淀 + 版本回滚</td><td>§6.5</td></tr>
+<tr><td>协作死锁</td><td>Planner 超时 + Kill Switch + Trace</td><td>§6.5</td></tr>
+</table>
+</div>
+
+</body>
+</html>
